@@ -1,0 +1,38 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: SmartFixSimulator
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      url: jdbc:h2:file:./h2db/data;MODE=MYSQL
+      username: sa
+      password: sa
+      driver-class-name: org.h2.Driver
+      initialSize: 5
+      minIdle: 1
+      maxActive: 20
+      testOnBorrow: true
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+      settings-allow-others: true
+  main:
+    allow-bean-definition-overriding: true
+
+quickfixj:
+  server:
+    enabled: true
+    config: ${QUICKFIXJ_SERVER_CONFIG_FILE:classpath:quickfixj-server.cfg}
+    jmx-enabled: true
+
+pagehelper:
+  helperDialect: h2
+  reasonable: true
+  supportMethodsArguments: true
+
+logging:
+  level:
+    root: DEBUG
