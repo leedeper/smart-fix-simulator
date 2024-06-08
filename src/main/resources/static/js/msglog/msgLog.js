@@ -26,19 +26,43 @@ $(function() {
             },
             cols: [[
                 {type:'numbers'}
-                ,{field:'side', title:'Side',align:'center'}
-                ,{field:'time', title:'Time',align:'center'}
+                ,{field:'side', title:'Side',align:'center', width:60, templet: function(d){
+                                                                              if(d.side === 'In'){
+                                                                                return '<span class="layui-bg-green" style="width: 40px;">In</span>';
+                                                                              } else {
+                                                                                return '<span style="background-color: #ffb800; width:50;">Out</span>';
+                                                                              }
+                                                                            }}
+                ,{field:'time', title:'Time',align:'center',width:200}
                 ,{field:'beginString', title:'Version',align:'center'}
+                ,{field:'msgType', title:'Type',align:'center',templet: function(d){
+                                                                                   var mType = d.msgType;
+                                                                                   var inx=0;
+                                                                                   if(mType.length==1){
+                                                                                           inx=mType.charAt(0).charCodeAt();
+                                                                                   }else if(mType.length==2){
+                                                                                            inx=mType.charAt(0).charCodeAt()+mType.charAt(1).charCodeAt();
+                                                                                   }
+                                                                                   var num=parseInt((16777216/100)*inx);
+                                                                                   var temp = num.toString(16);
+                                                                                   while(temp.length<6){
+                                                                                         temp='0'+temp;
+                                                                                   }
+                                                                                   var clor='#'+temp;
+                                                                                   return  '<span style="background-color: '+clor+'; width:50;">'+mType+'</span>';
+                                                                                    }}
+                ,{field:'msgSeqNum', title:'Seq Number',align:'center'}
                 ,{field:'senderCompID', title: 'Sender',align:'center'}
                 ,{field:'targetCompID', title: 'Target',align:'center'}
-                ,{title:'操作',align:'center', toolbar:'#optBar'}
+                ,{field:'text', title: 'Message',align:'center'}
+                ,{title:'Operation',align:'center', toolbar:'#optBar'}
             ]],
             done: function(res, curr, count){
                 //如果是异步请求数据方式，res即为你接口返回的信息。
                 //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
                 //console.log(res);
                 //得到当前页码
-                console.log(curr);
+                //console.log(curr);
                 $("[data-field='userStatus']").children().each(function(){
                     if($(this).text()=='1'){
                         $(this).text("有效")

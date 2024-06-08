@@ -17,16 +17,21 @@
  *
  */
 
-package smart.fixsimulator.dao;
+package smart.fixsimulator.fixacceptor.core;
 
-import smart.fixsimulator.dataobject.MessageDO;
-import io.mybatis.mapper.Mapper;
+import quickfix.Message;
+import quickfix.SessionID;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
- * message DAO
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageMapper extends Mapper<MessageDO,Long> {
-
+public interface Generator {
+    Message create(Message message, SessionID sessionId, List<Message> previousMessages);
+    void init(Properties properties);
+    void destroy();
 }

@@ -17,16 +17,21 @@
  *
  */
 
-package smart.fixsimulator.dao;
+package smart.fixsimulator.fixacceptor.core;
 
-import smart.fixsimulator.dataobject.MessageDO;
-import io.mybatis.mapper.Mapper;
+import smart.fixsimulator.fixacceptor.core.buildin.XSLTGenerator;
+
+import java.util.HashMap;
 
 /**
- * message DAO
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageMapper extends Mapper<MessageDO,Long> {
+public class BuiltinGeneratorMapping {
+    public static HashMap<String,Class<?>> mapping =new HashMap<>();
+    static{
+        mapping.put("xsltgen", XSLTGenerator.class);
+    }
 
 }

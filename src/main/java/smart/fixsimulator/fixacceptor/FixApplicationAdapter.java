@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import quickfix.*;
 import quickfix.field.*;
+import smart.fixsimulator.fixacceptor.core.Distributer;
 
 /**
  * handle the biz message
@@ -35,6 +36,11 @@ public class FixApplicationAdapter implements Application {
 
 	private final DefaultMessageFactory messageFactory = new DefaultMessageFactory();
 
+	private Distributer distributer;
+
+	public FixApplicationAdapter(String simulatorCfgPath){
+		this.distributer = new Distributer(simulatorCfgPath);
+	}
 	@Override
 	public void fromAdmin(Message message, SessionID sessionId) {
 		log.info("fromAdmin: Message={}, SessionId={}", message, sessionId);
@@ -43,14 +49,15 @@ public class FixApplicationAdapter implements Application {
 	@Override
 	public void fromApp(Message message, SessionID sessionId) {
 		log.info("fromApp: Message={}, SessionId={}", message, sessionId);
-
+		distributer.process(message, sessionId);
+		/*
         try {
 			if(message.getHeader().getField(new MsgType()).valueEquals(MsgType.ORDER_SINGLE)){
 				sendExecutionReport(message);
-			}/*else{
-				sendBusinessReject(message, BusinessRejectReason.APPLICATION_NOT_AVAILABLE,
-						"Application not available");
-			}*/
+			}//else{
+			//	sendBusinessReject(message, BusinessRejectReason.APPLICATION_NOT_AVAILABLE,
+			//			"Application not available");
+			// }
 
         } catch (FieldNotFound e) {
 			log.error("",e);
@@ -59,6 +66,7 @@ public class FixApplicationAdapter implements Application {
 			log.error("",e);
             throw new RuntimeException(e);
         }
+		*/
     }
 
 	@Override

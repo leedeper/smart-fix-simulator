@@ -1,0 +1,52 @@
+/*
+ * Copyright 2024 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Send email to lyziuu@gmail.com for any question.
+ *
+ */
+
+package smart.fixsimulator.common;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+
+/**
+ * Desc:
+ *
+ * @author Leedeper
+ */
+@Component
+public class ApplicationContextUtils implements ApplicationContextAware {
+
+    private static ApplicationContext applicationContext;
+
+    public static <T> T newAutoWiredInstance(Class<T> beanClass) {
+        return (T)applicationContext.getAutowireCapableBeanFactory()
+                .autowire(beanClass, AutowireCapableBeanFactory.AUTOWIRE_AUTODETECT, true);
+    }
+
+    public static <T> T autowire(T bean){
+        applicationContext.getAutowireCapableBeanFactory()
+                .autowireBeanProperties(bean, AutowireCapableBeanFactory.AUTOWIRE_AUTODETECT, true);
+        return bean;
+    }
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+}

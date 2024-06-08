@@ -45,9 +45,12 @@ public class FixAcceptorConfiguration {
     @Value("classpath:h2db/scripts.sql")
     private Resource dataScript;
 
+    @Value("${simulator.cfg.path:/Users/luck/githubproj/smart-fix-simulator/src/main/resources/simulator.cfg}")
+    private String simulatorCfgPath;
+
     @Bean
     public Application serverApplication() {
-        return new FixApplicationAdapter();
+        return new FixApplicationAdapter(simulatorCfgPath);
     }
 
     @Bean

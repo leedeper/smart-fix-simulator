@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import quickfix.*;
 import quickfix.field.MsgSeqNum;
+import smart.fixsimulator.common.ApplicationContextUtils;
 import smart.fixsimulator.common.Info;
 import smart.fixsimulator.dao.MessageLogMapper;
 import smart.fixsimulator.dataobject.MessageLogDO;

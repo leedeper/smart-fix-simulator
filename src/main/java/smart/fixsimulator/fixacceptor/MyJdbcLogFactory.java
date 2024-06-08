@@ -23,6 +23,7 @@ import quickfix.Log;
 import quickfix.LogFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
+import smart.fixsimulator.common.ApplicationContextUtils;
 
 /**
  * The quickfixJ JdbcLog save sender and target from session,
@@ -38,6 +39,9 @@ public class MyJdbcLogFactory implements LogFactory {
     }
     @Override
     public Log create(SessionID sessionID) {
-        return new MyJdbcLog(serverSessionSettings, sessionID);
+        MyJdbcLog log= new MyJdbcLog(serverSessionSettings, sessionID);
+        ApplicationContextUtils.autowire(log);
+        return log;
+
     }
 }

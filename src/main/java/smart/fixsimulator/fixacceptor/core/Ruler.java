@@ -17,16 +17,16 @@
  *
  */
 
-package smart.fixsimulator.dao;
+package smart.fixsimulator.fixacceptor.core;
 
-import smart.fixsimulator.dataobject.MessageDO;
-import io.mybatis.mapper.Mapper;
+import quickfix.Message;
+import quickfix.SessionID;
 
 /**
- * message DAO
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageMapper extends Mapper<MessageDO,Long> {
-
+public interface Ruler {
+    boolean match(Message msg, SessionID sessionId, String expressionStr);
 }

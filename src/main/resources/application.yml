@@ -36,3 +36,7 @@ pagehelper:
 logging:
   level:
     root: DEBUG
+
+simulator:
+  cfg:
+  path: /Users/luck/githubproj/smart-fix-simulator/src/main/resources/simulator.cfg

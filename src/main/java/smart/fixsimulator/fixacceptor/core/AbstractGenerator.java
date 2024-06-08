@@ -17,16 +17,22 @@
  *
  */
 
-package smart.fixsimulator.dao;
+package smart.fixsimulator.fixacceptor.core;
 
-import smart.fixsimulator.dataobject.MessageDO;
-import io.mybatis.mapper.Mapper;
+import quickfix.Message;
+import quickfix.SessionID;
+
+import java.util.List;
 
 /**
- * message DAO
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageMapper extends Mapper<MessageDO,Long> {
+public abstract class AbstractGenerator implements Generator{
 
+    @Override
+    public Message create(Message message, SessionID sessionId, List<Message> previousMessages) {
+        return null;
+    }
 }
