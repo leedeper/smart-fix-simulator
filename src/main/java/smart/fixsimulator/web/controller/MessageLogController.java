@@ -22,10 +22,15 @@ package smart.fixsimulator.web.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import smart.fixsimulator.common.Info;
+import smart.fixsimulator.dataobject.MessageLogDO;
 import smart.fixsimulator.dto.MessageLogDTO;
 import smart.fixsimulator.service.MessageLogService;
+import smart.fixsimulator.web.request.SearchRequest;
 import smart.fixsimulator.web.response.PageResponseResult;
+import smart.fixsimulator.web.response.ResponseResult;
 
 
 import java.util.List;
@@ -50,12 +55,49 @@ public class MessageLogController {
     }
 
 
-    @PostMapping("/msg")
+    @RequestMapping("/msg")
     @ResponseBody
-    public PageResponseResult<?> getMessageLog(@RequestParam("pageNum") Integer pageNum,
-                                                           @RequestParam("pageSize") Integer pageSize){
+    public PageResponseResult<?> getMessageLog(@RequestParam("pageNum") Integer pageNum
+                                                ,@RequestParam("pageSize") Integer pageSize
+                                                ,SearchRequest searchRequest){
+        MessageLogDO condition = new MessageLogDO();
+        condition.setSide(searchRequest.getSide());
+        condition.setMsgType(searchRequest.getMsgType());
+        condition.setSenderCompID(searchRequest.getSender());
+        condition.setTargetCompID(searchRequest.getTarget());
+        condition.setBeginString(searchRequest.getVersion());
+        log.debug("receive search request : pageNum ={},pageSize={}, parameter = {}",pageNum, pageSize, searchRequest);
 
-        return messageLogService.getMessageLog(pageNum, pageSize);
+        return messageLogService.getMessageLog(pageNum, pageSize, condition);
     }
+
+    @RequestMapping("detail")
+    public  String getMessageLogDetail(@RequestParam("msgId") String msgId, Model model){
+        ResponseResult<?> res = messageLogService.getMessageLogDetail(msgId);
+        model.addAttribute("xml", res.getContent());
+
+        return "/msglog/detail";
+    }
+
+    @RequestMapping("/delMsg")
+    @ResponseBody
+    public ResponseResult<?> delMsg(@RequestParam("id") String id){
+        boolean succ=messageLogService.del(id);
+        if(!succ){
+            return Info.ERROR_RESULT;
+        }
+        return Info.SUCC_RESULT;
+    }
+
+    @RequestMapping("/delAllMsg")
+    @ResponseBody
+    public ResponseResult<?> delAllMsg(){
+        boolean succ=messageLogService.del(null);
+        if(!succ){
+            return Info.ERROR_RESULT;
+        }
+        return Info.SUCC_RESULT;
+    }
+
 
 }

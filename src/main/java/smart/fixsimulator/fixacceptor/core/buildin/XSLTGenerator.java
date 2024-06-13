@@ -35,7 +35,7 @@ import java.util.Properties;
 @Slf4j
 public class XSLTGenerator implements Generator {
     @Override
-    public Message create(Message message, SessionID sessionId, List<Message> previousMessages) {
+    public Message create(Message message, SessionID sessionId) {
         try {
             return mockExecutionReport(message);
         } catch (FieldNotFound e) {
@@ -70,7 +70,7 @@ public class XSLTGenerator implements Generator {
         reply.setDouble(LastQty.FIELD,0D);
         reply.setDouble(CumQty.FIELD, 2233);
         reply.setString(ExecID.FIELD, "948485id");
-        reply.setChar(ExecTransType.FIELD, '0');
+        reply.setChar(ExecTransType.FIELD, '3');
         reply.setString(OrderID.FIELD, "orderid0001");
         reply.setDouble(OrderQty.FIELD, message.getDouble(OrderQty.FIELD));
         reply.setChar(OrdStatus.FIELD, '0');

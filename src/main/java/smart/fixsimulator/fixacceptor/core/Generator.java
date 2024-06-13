@@ -31,7 +31,7 @@ import java.util.Properties;
  * @author Leedeper
  */
 public interface Generator {
-    Message create(Message message, SessionID sessionId, List<Message> previousMessages);
+    Message create(Message message, SessionID sessionId);
     void init(Properties properties);
     void destroy();
 }

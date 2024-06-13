@@ -17,25 +17,19 @@
  *
  */
 
-package smart.fixsimulator.service;
+package smart.fixsimulator.dto;
 
-import smart.fixsimulator.dataobject.MessageLogDO;
-import smart.fixsimulator.web.response.PageResponseResult;
-import smart.fixsimulator.web.response.ResponseResult;
-
-import java.util.List;
+import lombok.Data;
 
 /**
- * the message log service
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageLogService<T> {
-    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize, MessageLogDO condition);
-
-    ResponseResult<String> getMessageLogDetail(String id);
-
-    List<String> getAllMsgType();
-
-    boolean del(String id);
+@Data
+public class MessageLogDetailDTO {
+    private String tag;
+    private String tagDesc;
+    private String value;
+    private String valueDesc;
 }

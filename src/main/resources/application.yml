@@ -1,7 +1,11 @@
 server:
   port: 8090
 
+
 spring:
+  thymeleaf:
+    cache: false
+
   application:
     name: SmartFixSimulator
   datasource:

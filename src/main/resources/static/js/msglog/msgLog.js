@@ -1,41 +1,37 @@
-/**
- * 用户管理
- */
-var pageCurr;
-var form;
 $(function() {
     layui.use('table', function(){
         var table = layui.table;
-        form = layui.form;
-
+        var form = layui.form;
+        var layer = layui.layer;
         tableIns=table.render({
             elem: '#msgLogList',
             url:'/msglog/msg',
-            method: 'post', //默认：get请求
+            method: 'post',
             cellMinWidth: 80,
             page: true,
             request: {
-                pageName: 'pageNum', //页码的参数名称，默认：pageNum
-                limitName: 'pageSize' //每页数据量的参数名，默认：pageSize
+                pageName: 'pageNum',
+                limitName: 'pageSize'
             },
             response:{
-                statusName: 'code', //数据状态的字段名称，默认：code
-                statusCode: 1, //成功的状态码，默认：0
-                countName: 'totalNum', //数据总数的字段名称，默认：count
-                dataName: 'content' //数据列表的字段名称，默认：data
+                statusName: 'code',
+                statusCode: 1, //code for succ, default 0
+                countName: 'totalNum',
+                dataName: 'content'
             },
             cols: [[
                 {type:'numbers'}
                 ,{field:'side', title:'Side',align:'center', width:60, templet: function(d){
                                                                               if(d.side === 'In'){
-                                                                                return '<span class="layui-bg-green" style="width: 40px;">In</span>';
+                                                                                return '<span class="layui-bg-green" style="width: 25px;color:white; width:20px;display:block;border-radius:.25em">In</span>';
                                                                               } else {
-                                                                                return '<span style="background-color: #ffb800; width:50;">Out</span>';
+                                                                                return '<span style="background-color: #ffb800; width:25px;color:white; width:20px;display:block;border-radius:.25em">Out</span>';
                                                                               }
                                                                             }}
                 ,{field:'time', title:'Time',align:'center',width:200}
                 ,{field:'beginString', title:'Version',align:'center'}
                 ,{field:'msgType', title:'Type',align:'center',templet: function(d){
+                                                                                    // random but certainty color for msgType
                                                                                    var mType = d.msgType;
                                                                                    var inx=0;
                                                                                    if(mType.length==1){
@@ -49,214 +45,160 @@ $(function() {
                                                                                          temp='0'+temp;
                                                                                    }
                                                                                    var clor='#'+temp;
-                                                                                   return  '<span style="background-color: '+clor+'; width:50;">'+mType+'</span>';
+                                                                                   return  '<span id="msgTypeId'+d.id+'" ondblclick="showTypeName(\''+mType+'\',\''+d.id+'\')" style="background-color:'+clor+';color:white; width:20px;display:block;border-radius:.25em">'+mType+'</span>';
                                                                                     }}
-                ,{field:'msgSeqNum', title:'Seq Number',align:'center'}
+                ,{field:'msgSeqNum', title:'Sequence',align:'center'}
                 ,{field:'senderCompID', title: 'Sender',align:'center'}
                 ,{field:'targetCompID', title: 'Target',align:'center'}
                 ,{field:'text', title: 'Message',align:'center'}
                 ,{title:'Operation',align:'center', toolbar:'#optBar'}
-            ]],
-            done: function(res, curr, count){
-                //如果是异步请求数据方式，res即为你接口返回的信息。
-                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                //console.log(res);
-                //得到当前页码
-                //console.log(curr);
-                $("[data-field='userStatus']").children().each(function(){
-                    if($(this).text()=='1'){
-                        $(this).text("有效")
-                    }else if($(this).text()=='0'){
-                        $(this).text("失效")
-                    }
-                });
-                //得到数据总量
-                //console.log(count);
-                pageCurr=curr;
-            }
+            ]]
         });
 
-        //监听工具条
         table.on('tool(msgLogTable)', function(obj){
             var data = obj.data;
-            if(obj.event === 'del'){
-                //删除
-                delUser(data,data.id,data.sysUserName);
-            } else if(obj.event === 'edit'){
-                //编辑
-                openUser(data,"编辑");
-            }else if(obj.event === 'recover'){
-                //恢复
-                recoverUser(data,data.id);
+            if(obj.event === 'msgDel'){
+                delOne(data);
+            } else if(obj.event === 'msgDetail'){
+                showFixMsg(data.id);
             }
         });
 
-        //监听提交
-        form.on('submit(userSubmit)', function(data){
-            // TODO 校验
-            formSubmit(data);
-            return false;
+        table.on('rowDouble(msgLogTable)', function (obj) {
+                        showFixMsg(obj.data.id);
         });
     });
 
-    //搜索框
-    layui.use(['form','laydate'], function(){
+    layui.use(['table','form','laydate'], function(){
         var form = layui.form ,layer = layui.layer
             ,laydate = layui.laydate;
-        //日期
+        var table = layui.table;
+        // date
         laydate.render({
             elem: '#startTime'
         });
         laydate.render({
             elem: '#endTime'
         });
-        //TODO 数据校验
-        //监听搜索框
+
+        form.on('checkbox(autoRefresh)', function(data){
+          autoRefresh(data.elem.checked);
+        });
+
         form.on('submit(searchSubmit)', function(data){
-            //重新加载table
-            load(data);
+            var field = data.field; // the form fields
+            //console.info(field);
+            // reload the table
+            table.reload('msgLogList', {
+                url: "/msglog/msg",
+                page: {
+                    curr: 1
+                },
+                where: field
+            });
             return false;
         });
     });
 });
 
-//提交表单
-function formSubmit(obj){
-    $.ajax({
-        type: "POST",
-        data: $("#userForm").serialize(),
-        url: "/user/setUser",
-        success: function (data) {
-            if (data.code == 1) {
-                layer.alert(data.msg,function(){
-                    layer.closeAll();
-                    load(obj);
-                });
-            } else {
-                layer.alert(data.msg);
+bindDataToSelect("#version","/home/util/version");
+bindDataToSelect("#sender","/home/util/sender");
+bindDataToSelect("#target","/home/util/target");
+bindDataToSelect("#msgType","/home/util/msgType");
+
+
+function bindDataToSelect(selectId, url, defaultValue){
+    $.post(url, function (data){
+        $(selectId).empty();
+        $(selectId).append("<option value=''>Select</option>");
+        var kv = data.content;
+        $.each(kv, function(key,value){
+            $(selectId).append("<option value='"+value+"'>"+key+"</option>");
+        }
+        );
+        layui.use(['form'], function(){
+            if(defaultValue != undefined && defaultValue!=null && defaultValue!=''){
+                $(selectId).val(defaultValue);
             }
-        },
-        error: function () {
-            layer.alert("操作请求错误，请您稍后再试",function(){
-                layer.closeAll();
-                //加载load方法
-                load(obj);//自定义
-            });
-        }
-    });
+            layui.form.render();
+        });
+    })
 }
 
-//开通用户
-function addUser(){
-    openUser(null,"开通用户");
-}
-function openUser(data,title){
-    var roleId = null;
-    if(data==null || data==""){
-        $("#id").val("");
-    }else{
-        $("#id").val(data.id);
-        $("#username").val(data.sysUserName);
-        $("#mobile").val(data.userPhone);
-        roleId = data.roleId;
-    }
-    var pageNum = $(".layui-laypage-skip").find("input").val();
-    $("#pageNum").val(pageNum);
-    $.ajax({
-        url:'/role/getRoles',
-        dataType:'json',
-        async: true,
-        success:function(data){
-            $.each(data,function(index,item){
-                if(!roleId){
-                    var option = new Option(item.roleName,item.id);
-                }else {
-                    var option = new Option(item.roleName,item.id);
-                    // // 如果是之前的parentId则设置选中
-                    if(item.id == roleId) {
-                        option.setAttribute("selected",'true');
-                    }
+function showTypeName(msgType, seq){
+            $.post("/home/util/fixMsgTypeName",{"msgType":msgType},function(data){
+                if (data.code == 1) {
+                    //layer.alert(data.content);
+                   layer.tips(data.content,"#msgTypeId"+seq);
+                } else {
+                   layer.tips("unkonwn type : "+msgType);
                 }
-                $('#roleId').append(option);//往下拉菜单里添加元素
-                form.render('select'); //这个很重要
-            })
-        }
-    });
+            });
+}
 
+function showFixMsg(msgId){
     layer.open({
-        type:1,
-        title: title,
-        fixed:false,
-        resize :false,
-        shadeClose: true,
-        area: ['550px'],
-        content:$('#setUser'),
-        end:function(){
-            cleanUser();
-        }
+      type: 2,
+      title: false,
+      area: ['450px', '600px'],
+      shade: 0.8,
+      closeBtn: 1,
+      shadeClose: true,
+      content: '/msglog/detail?msgId='+msgId
     });
 }
 
-function delUser(obj,id,name) {
-    var currentUser=$("#currentUser").html();
-    if(null!=id){
-        if(currentUser==id){
-            layer.alert("对不起，您不能执行删除自己的操作！");
-        }else{
-            layer.confirm('您确定要删除'+name+'用户吗？', {
-                btn: ['确认','返回'] //按钮
+var timer;
+autoRefresh($('#autoRefresh').prop('checked'));
+function autoRefresh(checked){
+    if( checked ){
+        $('#searchSubmit').click();
+        timer = setInterval(function() {
+            $('#searchSubmit').click();
+        }, 2000);
+    }else{
+        clearInterval(timer);
+    }
+}
+
+
+
+function delAll(){
+            layer.confirm('Are you sure to delete all message?', {
+                title: "Confirmation Dialog",
+                btn: ['Yes','No']
             }, function(){
-                $.post("/user/updateUserStatus",{"id":id,"status":0},function(data){
+                $.post("/msglog/delAllMsg",function(data){
                     if (data.code == 1) {
-                        layer.alert(data.msg,function(){
+                        layer.alert("Delete successfully",function(){
                             layer.closeAll();
-                            load(obj);
+                            $('#searchSubmit').click();
                         });
                     } else {
-                        layer.alert(data.msg);
+                        layer.alert(data.message);
                     }
                 });
             }, function(){
                 layer.closeAll();
             });
-        }
-    }
 }
-//恢复
-function recoverUser(obj,id) {
-    if(null!=id){
-        layer.confirm('您确定要恢复吗？', {
-            btn: ['确认','返回'] //按钮
-        }, function(){
-            $.post("/user/updateUserStatus",{"id":id,"status":1},function(data){
-                if (data.code == 1) {
-                    layer.alert(data.msg,function(){
-                        layer.closeAll();
-                        load(obj);
-                    });
-                } else {
-                    layer.alert(data.msg);
-                }
+
+function delOne(obj) {
+            layer.confirm('Are you sure to delete?', {
+                title: "Confirmation Dialog",
+                btn: ['Yes','No']
+            }, function(){
+                $.post("/msglog/delMsg",{"id":obj.id},function(data){
+                    if (data.code == 1) {
+                        layer.alert("Delete successfully",function(){
+                            layer.closeAll();
+                            $('#searchSubmit').click();
+                        });
+                    } else {
+                        layer.alert(data.message);
+                    }
+                });
+            }, function(){
+                layer.closeAll();
             });
-        }, function(){
-            layer.closeAll();
-        });
-    }
-}
-
-function load(obj){
-    //重新加载table
-    tableIns.reload({
-        where: obj.field
-        , page: {
-            curr: pageCurr //从当前页码开始
-        }
-    });
-}
-
-function cleanUser(){
-    $("#username").val("");
-    $("#mobile").val("");
-    $("#password").val("");
-    $('#roleId').html("");
 }

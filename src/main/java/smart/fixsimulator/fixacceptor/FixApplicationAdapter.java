@@ -39,7 +39,11 @@ public class FixApplicationAdapter implements Application {
 	private Distributer distributer;
 
 	public FixApplicationAdapter(String simulatorCfgPath){
-		this.distributer = new Distributer(simulatorCfgPath);
+		try {
+			this.distributer = new Distributer(simulatorCfgPath);
+		}catch (Throwable e){
+			log.error("Error when create Distributer", e);
+		}
 	}
 	@Override
 	public void fromAdmin(Message message, SessionID sessionId) {

@@ -17,25 +17,25 @@
  *
  */
 
-package smart.fixsimulator.service;
+package smart.fixsimulator.web.request;
 
-import smart.fixsimulator.dataobject.MessageLogDO;
-import smart.fixsimulator.web.response.PageResponseResult;
-import smart.fixsimulator.web.response.ResponseResult;
+import lombok.Data;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
- * the message log service
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageLogService<T> {
-    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize, MessageLogDO condition);
+@Data
+public class SearchRequest implements Serializable {
+    private String side;
+    private String startDate;
+    private String endDate;
+    private String msgType;
+    private String version;
+    private String sender;
+    private String target;
 
-    ResponseResult<String> getMessageLogDetail(String id);
-
-    List<String> getAllMsgType();
-
-    boolean del(String id);
 }

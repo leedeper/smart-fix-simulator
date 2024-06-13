@@ -20,9 +20,13 @@
 package smart.fixsimulator.dao;
 
 import io.mybatis.mapper.Mapper;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
+
+import io.mybatis.mapper.example.Example;
+import io.mybatis.mapper.example.ExampleMapper;
+import org.springframework.util.StringUtils;
 import smart.fixsimulator.dataobject.MessageLogDO;
+
+import java.util.List;
 
 
 /**
@@ -31,5 +35,42 @@ import smart.fixsimulator.dataobject.MessageLogDO;
  * @author Leedeper
  */
 public interface MessageLogMapper extends Mapper<MessageLogDO,Long> {
+
+
+    default List<MessageLogDO> getAllMessageLogDesc(MessageLogDO contition){
+        Example<MessageLogDO> example =new Example<>();
+        Example.Criteria<MessageLogDO> criteria = example.createCriteria();
+
+        if(!StringUtils.isEmpty(contition.getSide())) {
+            criteria.andEqualTo(MessageLogDO::getSide, contition.getSide());
+        }
+
+        if(!StringUtils.isEmpty(contition.getMsgType())) {
+            criteria.andEqualTo(MessageLogDO::getMsgType, contition.getMsgType());
+        }
+
+        if(!StringUtils.isEmpty(contition.getBeginString())) {
+            criteria.andEqualTo(MessageLogDO::getBeginString, contition.getBeginString());
+        }
+
+        if(!StringUtils.isEmpty(contition.getSenderCompID())) {
+            criteria.andEqualTo(MessageLogDO::getSenderCompID, contition.getSenderCompID());
+        }
+
+        if(!StringUtils.isEmpty(contition.getTargetCompID())) {
+            criteria.andEqualTo(MessageLogDO::getTargetCompID, contition.getTargetCompID());
+        }
+
+        example.orderBy(MessageLogDO::getTime, Example.Order.DESC);
+        return this.selectByExample(example);
+    }
+
+    default List<MessageLogDO> getMsgTypeDistinct(){
+        Example<MessageLogDO> example =new Example<>();
+        example.setDistinct(true);
+        example.selectColumns(MessageLogDO::getMsgType);
+        example.orderBy(MessageLogDO::getMsgType, Example.Order.DESC);
+        return this.selectByExample(example);
+    }
 
 }

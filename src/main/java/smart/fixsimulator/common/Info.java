@@ -20,6 +20,7 @@
 package smart.fixsimulator.common;
 
 import lombok.Getter;
+import smart.fixsimulator.web.response.ResponseResult;
 
 /**
  * some info for common used
@@ -49,6 +50,9 @@ public final class Info {
      * If detailed definition is required, use other numbers
      */
     public static final ResponseStatus ERROR=new ResponseStatus("-1","common error");
+
+    public static final ResponseResult ERROR_RESULT=new ResponseResult<>(ERROR);
+    public static final ResponseResult SUCC_RESULT=new ResponseResult<>();
 
 
     public static class ResponseStatus {

@@ -17,25 +17,30 @@
  *
  */
 
-package smart.fixsimulator.service;
+package smart.fixsimulator.fixacceptor.core;
 
-import smart.fixsimulator.dataobject.MessageLogDO;
-import smart.fixsimulator.web.response.PageResponseResult;
-import smart.fixsimulator.web.response.ResponseResult;
-
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.SessionID;
+import quickfix.field.MsgType;
 
 /**
- * the message log service
+ * Only use msgType to distribute
  *
  * @author Leedeper
  */
-public interface MessageLogService<T> {
-    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize, MessageLogDO condition);
-
-    ResponseResult<String> getMessageLogDetail(String id);
-
-    List<String> getAllMsgType();
-
-    boolean del(String id);
+@Slf4j
+public class MsgTypeRuler implements Ruler{
+    @Override
+    public boolean match(Message msg, SessionID sessionId, String expressionStr) {
+        String msgType;
+        try {
+            msgType = msg.getHeader().getString(MsgType.FIELD);
+        } catch (FieldNotFound e) {
+            log.error("No MsgType in message, so regard as not-matched,{}", msg);
+            return false;
+        }
+        return expressionStr.equals(msgType);
+    }
 }

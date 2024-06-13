@@ -24,6 +24,7 @@ import io.mybatis.provider.Entity.Table;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Desc:
@@ -37,7 +38,7 @@ public class MessageLogDO {
     private Long id;
 
     @Column("time")
-    private Date time;
+    private Timestamp time;
 
     @Column("side")
     private String side;

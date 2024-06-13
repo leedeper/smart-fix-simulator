@@ -25,16 +25,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import quickfix.*;
+import quickfix.field.ApplVerID;
+import smart.fixsimulator.common.FixMessageUtil;
+import smart.fixsimulator.common.Info;
 import smart.fixsimulator.dao.MessageLogMapper;
 import smart.fixsimulator.dataobject.MessageLogDO;
 
 import smart.fixsimulator.dto.MessageLogDTO;
+import smart.fixsimulator.dto.MessageLogDetailDTO;
 import smart.fixsimulator.service.MessageLogService;
 import smart.fixsimulator.web.response.PageResponseResult;
+import smart.fixsimulator.web.response.ResponseResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static smart.fixsimulator.common.Info.ERROR_RESULT;
 
 /**
  * implement message log svr
@@ -48,10 +57,10 @@ public class MessageLogServiceImpl implements MessageLogService<List<MessageLogD
     @Autowired
     private MessageLogMapper messageLogMapper;
     @Override
-    public PageResponseResult<List<MessageLogDTO>> getMessageLog(Integer pageNum, Integer pageSize) {
+    public PageResponseResult<List<MessageLogDTO>> getMessageLog(Integer pageNum, Integer pageSize,MessageLogDO condition) {
         PageHelper.startPage(pageNum, pageSize);
-
-        List<MessageLogDO> all = messageLogMapper.selectList(null);
+        log.debug("Condition {}",condition);
+        List<MessageLogDO> all = messageLogMapper.getAllMessageLogDesc(condition);
         int countNum = (int)((Page<MessageLogDO>) all).getTotal();
         log.debug("find msg from db total : {}/{}", all.size(),countNum);
         List<MessageLogDTO> resultMsgList = new ArrayList<>();
@@ -73,6 +82,56 @@ public class MessageLogServiceImpl implements MessageLogService<List<MessageLogD
 
         log.debug("query all message log : {}，{}", result,result.getContent());
         return result;
+    }
+
+    @Override
+    public ResponseResult<String> getMessageLogDetail(String id) {
+        MessageLogDO msgLogDO = messageLogMapper.selectByPrimaryKey(Long.parseLong(id)).orElse(null);
+        if(msgLogDO==null){
+            log.warn("no found for message id {}",id);
+            return ERROR_RESULT;
+        }
+        String resText = toXML(msgLogDO);
+        ResponseResult res = new ResponseResult();
+        res.setContent(resText);
+        return res;
+    }
+
+    @Override
+    public List<String> getAllMsgType() {
+        return messageLogMapper.getMsgTypeDistinct().stream()
+                .map(e->e.getMsgType()).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean del(String id) {
+        int total=0;
+        if(id==null){
+            total = messageLogMapper.delete(new MessageLogDO());
+        }else{
+            total = messageLogMapper.deleteByPrimaryKey(Long.parseLong(id));
+        }
+        log.info("delete recored : {}",total);
+        return total>0;
+    }
+
+    private String toXML(MessageLogDO msgLogDO)  {
+        String beginString = msgLogDO.getBeginString();
+        String qualifier = msgLogDO.getSessionQualifier();
+        String senderCompID ;
+        String targetCompID ;
+        if(Info.Side.Out.name().equals(msgLogDO.getSide())) {
+            senderCompID = msgLogDO.getSenderCompID();
+            targetCompID = msgLogDO.getTargetCompID();
+        }else if(Info.Side.In.name().equals(msgLogDO.getSide())) {
+            senderCompID = msgLogDO.getTargetCompID();
+            targetCompID = msgLogDO.getSenderCompID();
+        }else{
+            throw new RuntimeException("Invalid side type "+msgLogDO.getSide());
+        }
+
+        return FixMessageUtil.toXML(beginString,senderCompID
+                ,targetCompID, qualifier, msgLogDO.getText());
     }
 
 }

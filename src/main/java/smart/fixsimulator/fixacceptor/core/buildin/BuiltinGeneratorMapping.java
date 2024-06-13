@@ -17,25 +17,21 @@
  *
  */
 
-package smart.fixsimulator.service;
+package smart.fixsimulator.fixacceptor.core.buildin;
 
-import smart.fixsimulator.dataobject.MessageLogDO;
-import smart.fixsimulator.web.response.PageResponseResult;
-import smart.fixsimulator.web.response.ResponseResult;
-
-import java.util.List;
+import java.util.HashMap;
 
 /**
- * the message log service
+ * Desc:
  *
  * @author Leedeper
  */
-public interface MessageLogService<T> {
-    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize, MessageLogDO condition);
+public class BuiltinGeneratorMapping {
+    public static HashMap<String,Class<?>> mapping =new HashMap<>();
+    static{
+        mapping.put("xsltgen", XSLTGenerator.class);
+        mapping.put("xmlgen", XMLGenerator.class);
 
-    ResponseResult<String> getMessageLogDetail(String id);
+    }
 
-    List<String> getAllMsgType();
-
-    boolean del(String id);
 }

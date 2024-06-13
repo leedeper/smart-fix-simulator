@@ -23,12 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import quickfix.*;
 import quickfix.field.MsgSeqNum;
-import smart.fixsimulator.common.ApplicationContextUtils;
 import smart.fixsimulator.common.Info;
 import smart.fixsimulator.dao.MessageLogMapper;
 import smart.fixsimulator.dataobject.MessageLogDO;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import static quickfix.JdbcSetting.SETTING_JDBC_LOG_HEARTBEATS;
 
@@ -132,7 +131,7 @@ public class MyJdbcLog implements Log {
     }
 
     private void commonValue(MessageLogDO msg, String msgstr){
-        msg.setTime(new Date(SystemTime.getUtcCalendar().getTimeInMillis()));
+        msg.setTime(new Timestamp(SystemTime.getUtcCalendar().getTimeInMillis()));
         msg.setText(msgstr);
         msg.setBeginString(sessionID.getBeginString());
         msg.setSessionQualifier(sessionID.getSessionQualifier());

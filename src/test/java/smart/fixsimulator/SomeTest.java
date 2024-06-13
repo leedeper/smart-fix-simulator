@@ -17,35 +17,37 @@
  *
  */
 
-package smart.fixsimulator.fixacceptor.core;
+package smart.fixsimulator;
 
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import quickfix.Message;
-import quickfix.SessionID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * distribute by spring expression , for example<br>
- *
- * generator.testXslt.type=xsltgen
- * generator.testXslt.rule=\#message.getHeader().getString(35).equals("D") && #message.getString(20).equals("0")
+ * Desc:
  *
  * @author Leedeper
  */
-@Slf4j
-public class SPELRuler implements Ruler{
-    ExpressionParser parser = new SpelExpressionParser();
+public class SomeTest {
+    @Test
+    void testSPEL(){
+        ExpressionParser parser = new SpelExpressionParser();
+        String expressionStr="#message.getHeader().getString(35).equals(\"D\") && #message.getString(20).equals(\"0\")";
+        Message msg = new Message();
+        msg.getHeader().setString(35,"D");
+        msg.setString(20,"0");
 
-    @Override
-    public boolean match(Message msg, SessionID sessionId, String expressionStr) {
-        //String str = msg.getHeader().getString(35).equals("D");
+
         EvaluationContext context = new StandardEvaluationContext();
         context.setVariable("message", msg);
-        context.setVariable("sessionID", sessionId);
+
         boolean matched = parser.parseExpression(expressionStr).getValue(context, Boolean.class);
-        return matched;
+        assertEquals(true, matched,"spel error");
     }
 }

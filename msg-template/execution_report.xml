@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<message>
+    <header>
+        <field tag="8"><![CDATA[FIX.4.2]]></field>
+        <field tag="9"><![CDATA[168]]></field>
+        <field tag="34"><![CDATA[16]]></field>
+        <field tag="35"><![CDATA[8]]></field>
+        <field tag="49"><![CDATA[EXEC]]></field>
+        <field tag="52"><![CDATA[20240612-08:28:34.995]]></field>
+        <field tag="56"><![CDATA[BANZAI]]></field>
+    </header>
+    <body>
+        <field tag="6"><![CDATA[22]]></field>
+        <field tag="11"><![CDATA[id1111352157882577]]></field>
+        <field tag="14"><![CDATA[2233]]></field>
+        <field tag="17"><![CDATA[948485id]]></field>
+        <field tag="20"><![CDATA[2]]></field>
+        <field tag="31"><![CDATA[0]]></field>
+        <field tag="32"><![CDATA[0]]></field>
+        <field tag="37"><![CDATA[orderid0001]]></field>
+        <field tag="38"><![CDATA[4444]]></field>
+        <field tag="39"><![CDATA[0]]></field>
+        <field tag="54"><![CDATA[1]]></field>
+        <field tag="55"><![CDATA[www]]></field>
+        <field tag="150"><![CDATA[2]]></field>
+        <field tag="151"><![CDATA[0]]></field>
+    </body>
+    <trailer>
+        <field tag="10"><![CDATA[233]]></field>
+    </trailer>
+</message>
