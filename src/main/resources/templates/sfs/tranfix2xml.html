@@ -1,0 +1,100 @@
+<!--
+  ~ Copyright 2024 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  ~ Send email to lyziuu@gmail.com for any question.
+  ~
+  -->
+
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: htmlhead" th:with="title='Smart Fix Simulator'"></head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- header -->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body" style="margin: 1%">
+
+        <div class="layui-row">
+            <div class="layui-form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">By Session</label>
+                        <div class="layui-input-block">
+                            <select name="sessionId" id="sessionId"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <table><tr>
+                <th style="width: 450px;">
+                    <textarea id="rawMsg" style="width: 450px; height: 500px; border-color: gray;"></textarea>
+                </th>
+                <th style="width: 150px; vertical-align: middle;text-align:center;">
+                    <button class="layui-btn"  style="width: 120px;text-align:center;" onclick="tran()">Parse to XML</button>
+                </th>
+                <th style="width: 450px;">
+                    <textarea id="theXML" style="width: 450px; height: 500px;border-color: gray;"></textarea>
+
+                </th>
+            </tr></table>
+        </div>
+
+        </div>
+
+        <script>
+            bindDataToSelect("#sessionId","/home/util/sessions");
+
+            function bindDataToSelect(selectId, url){
+                $.post(url, function (data){
+                        $(selectId).empty();
+                        $(selectId).append("<option value=''>Select</option>");
+                        var kv = data.content;
+                        $.each(kv, function(a,b){
+                            $(selectId).append("<option value='"+b+"'>"+b+"</option>");
+                        }
+                    );
+                 layui.use(['form'], function(){
+                        layui.form.render();
+                    });
+                })
+            }
+
+            function tran(){
+                    var msg=$("#rawMsg").val();
+                    var sid=$("#sessionId").val();
+                    $.post("/home/util/fix2xml",{"msg":msg,"session":sid},function(data){
+                        if (data.code == 1) {
+                            layer.alert("Parse successfully",function(){
+                                layer.closeAll();
+                                $("#theXML").val(data.content);
+                            });
+                        } else {
+                            layer.alert(data.message);
+                        }
+                        });
+            }
+
+        </script>
+
+
+        <div th:replace="fragments/footer :: footer"></div>
+    </div>
+</div>
+</body>
+</html>

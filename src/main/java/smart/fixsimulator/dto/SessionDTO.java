@@ -17,21 +17,19 @@
  *
  */
 
-package smart.fixsimulator.fixacceptor.core.buildin;
+package smart.fixsimulator.dto;
 
-import java.util.HashMap;
+import lombok.Data;
 
 /**
- * all build-in generator, if not in this mapping ,it will be created by class path
+ * Desc:
  *
  * @author Leedeper
  */
-public class BuiltinGeneratorMapping {
-    public static HashMap<String,Class<?>> mapping =new HashMap<>();
-    static{
-        mapping.put("xsltgen", XSLTGenerator.class);
-        mapping.put("xmlgen", XMLGenerator.class);
-        mapping.put("nonegen", NoneGenerator.class);
-    }
+@Data
+public class SessionDTO {
+    private String name;
+    private boolean isLogon;
+    private String logonTime;
 
 }

@@ -40,6 +40,7 @@ import smart.fixsimulator.web.response.ResponseResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,10 +58,11 @@ public class MessageLogServiceImpl implements MessageLogService<List<MessageLogD
     @Autowired
     private MessageLogMapper messageLogMapper;
     @Override
-    public PageResponseResult<List<MessageLogDTO>> getMessageLog(Integer pageNum, Integer pageSize,MessageLogDO condition) {
+    public PageResponseResult<List<MessageLogDTO>> getMessageLog(Integer pageNum, Integer pageSize
+            ,MessageLogDO condition,Date startDate, Date endDate) {
         PageHelper.startPage(pageNum, pageSize);
         log.debug("Condition {}",condition);
-        List<MessageLogDO> all = messageLogMapper.getAllMessageLogDesc(condition);
+        List<MessageLogDO> all = messageLogMapper.getAllMessageLogDesc(condition,startDate,endDate);
         int countNum = (int)((Page<MessageLogDO>) all).getTotal();
         log.debug("find msg from db total : {}/{}", all.size(),countNum);
         List<MessageLogDTO> resultMsgList = new ArrayList<>();
@@ -112,7 +114,7 @@ public class MessageLogServiceImpl implements MessageLogService<List<MessageLogD
             total = messageLogMapper.deleteByPrimaryKey(Long.parseLong(id));
         }
         log.info("delete recored : {}",total);
-        return total>0;
+        return true;
     }
 
     private String toXML(MessageLogDO msgLogDO)  {

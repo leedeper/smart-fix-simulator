@@ -25,7 +25,7 @@ import java.util.List;
 
 
 /**
- * the message service
+ * the message service, wait to used
  *
  * @author Leedeper
  */

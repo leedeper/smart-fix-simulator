@@ -22,12 +22,12 @@ package smart.fixsimulator.fixacceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import quickfix.*;
-import quickfix.field.MsgSeqNum;
-import smart.fixsimulator.common.Info;
-import smart.fixsimulator.dao.MessageLogMapper;
-import smart.fixsimulator.dataobject.MessageLogDO;
 
-import java.sql.Timestamp;
+import smart.fixsimulator.common.Info;
+import smart.fixsimulator.dao.EventLogMapper;
+import smart.fixsimulator.dao.MessageLogMapper;
+import smart.fixsimulator.dataobject.EventLogDO;
+import smart.fixsimulator.dataobject.MessageLogDO;
 
 import static quickfix.JdbcSetting.SETTING_JDBC_LOG_HEARTBEATS;
 
@@ -42,10 +42,15 @@ public class MyJdbcLog implements Log {
     private boolean logHeartbeats;
 
     private MessageLogMapper messageLogMapper;
+    private EventLogMapper eventLogMapper;
 
     @Autowired
     public void setMessageLogMapper(MessageLogMapper messageLogMapper){
         this.messageLogMapper = messageLogMapper;
+    }
+    @Autowired
+    public void setEventLogMapper(EventLogMapper eventLogMapper){
+        this.eventLogMapper = eventLogMapper;
     }
     public MyJdbcLog(SessionSettings serverSessionSettings, SessionID sessionID){
         this.sessionID = sessionID;
@@ -69,7 +74,7 @@ public class MyJdbcLog implements Log {
             return;
         }
 
-        MessageLogDO msgDO = createIncomingMessage(message);
+        MessageLogDO msgDO = MyJdbcMessageLogConvertor.createIncomingMessage(message, sessionID);
         messageLogMapper.insert(msgDO);
     }
 
@@ -78,70 +83,30 @@ public class MyJdbcLog implements Log {
         if (!logHeartbeats && MessageUtils.isHeartbeat(message)) {
             return;
         }
-        MessageLogDO msgDO = createOutgoingMessage(message);
+        MessageLogDO msgDO = MyJdbcMessageLogConvertor.createOutgoingMessage(message, sessionID);
         messageLogMapper.insert(msgDO);
     }
 
     @Override
-    public void onEvent(String s) {
-
+    public void onEvent(String txt) {
+        insertEventLog(txt, Info.EventLogType.Info);
     }
 
     @Override
-    public void onErrorEvent(String s) {
+    public void onErrorEvent(String txt) {
+        insertEventLog(txt, Info.EventLogType.Error);
+    }
 
+    private void insertEventLog(String txt, Info.EventLogType type){
+        EventLogDO eventDo = MyJdbcEventLogConvertor.createEvent(txt,sessionID, type);
+        eventLogMapper.insert(eventDo);
     }
 
     @Override
     public void clear() {
 
     }
-    private MessageLogDO createIncomingMessage(String message){
-        MessageLogDO msg = new MessageLogDO();
-        commonValue(msg, message);
-        msg.setSide(Info.Side.In.name());
 
-        // reverse
-        msg.setSenderCompID(sessionID.getTargetCompID());
-        msg.setSenderSubID(sessionID.getTargetSubID());
-        msg.setSenderLocID(sessionID.getTargetLocationID());
 
-        msg.setTargetCompID(sessionID.getSenderCompID());
-        msg.setTargetSubID(sessionID.getSenderSubID());
-        msg.setTargetLocID(sessionID.getSenderLocationID());
-
-        return msg;
-    }
-
-    private MessageLogDO createOutgoingMessage(String message){
-        MessageLogDO msg = new MessageLogDO();
-        commonValue(msg, message);
-        msg.setSide(Info.Side.Out.name());
-
-        // same as session
-        msg.setSenderCompID(sessionID.getSenderCompID());
-        msg.setSenderSubID(sessionID.getSenderSubID());
-        msg.setSenderLocID(sessionID.getSenderLocationID());
-
-        msg.setTargetCompID(sessionID.getTargetCompID());
-        msg.setTargetSubID(sessionID.getTargetSubID());
-        msg.setTargetLocID(sessionID.getTargetLocationID());
-
-        return msg;
-    }
-
-    private void commonValue(MessageLogDO msg, String msgstr){
-        msg.setTime(new Timestamp(SystemTime.getUtcCalendar().getTimeInMillis()));
-        msg.setText(msgstr);
-        msg.setBeginString(sessionID.getBeginString());
-        msg.setSessionQualifier(sessionID.getSessionQualifier());
-
-        try {
-            msg.setMsgType(MessageUtils.getMessageType(msgstr));
-            msg.setMsgSeqNum(Long.valueOf(MessageUtils.getStringField(msgstr, MsgSeqNum.FIELD)));
-        } catch (Throwable e) {
-            log.warn("Some tag is not exists in msg when getting msgType or msgSeqNum",e);
-        }
-    }
 
 }

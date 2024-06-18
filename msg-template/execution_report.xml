@@ -11,17 +11,17 @@
     </header>
     <body>
         <field tag="6"><![CDATA[22]]></field>
-        <field tag="11"><![CDATA[id1111352157882577]]></field>
-        <field tag="14"><![CDATA[2233]]></field>
+        <field tag="11"><![CDATA[${sp:#message.getString(11)}]]></field>
+        <field tag="14"><![CDATA[${RandomInt(10000,50000)}]]></field>
         <field tag="17"><![CDATA[948485id]]></field>
-        <field tag="20"><![CDATA[2]]></field>
+        <field tag="20"><![CDATA[3]]></field>
         <field tag="31"><![CDATA[0]]></field>
         <field tag="32"><![CDATA[0]]></field>
-        <field tag="37"><![CDATA[orderid0001]]></field>
-        <field tag="38"><![CDATA[4444]]></field>
+        <field tag="37"><![CDATA[${Sequence(./execution-report.seq)}]]></field>
+        <field tag="38"><![CDATA[${sp:#message.getString(38)}]]></field>
         <field tag="39"><![CDATA[0]]></field>
         <field tag="54"><![CDATA[1]]></field>
-        <field tag="55"><![CDATA[www]]></field>
+        <field tag="55"><![CDATA[${sp:#message.getString(55)}]]></field>
         <field tag="150"><![CDATA[2]]></field>
         <field tag="151"><![CDATA[0]]></field>
     </body>

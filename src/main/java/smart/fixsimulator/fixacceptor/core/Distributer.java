@@ -21,6 +21,11 @@ package smart.fixsimulator.fixacceptor.core;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.StringUtils;
 import quickfix.*;
 import smart.fixsimulator.common.ApplicationContextUtils;
@@ -45,10 +50,11 @@ public class Distributer {
     private static String GEN_FLAG = "generator.";
     private LinkedHashMap<String, GeneratorWrapper> allGen = new LinkedHashMap<>();
     private Ruler ruler;
-    private Loop loop;
+
     private enum DistributerParam{
         Rule("rule"),
         Type("type"),
+        CancelPostAction("postAction.cancel"),
         LoopInitialDelay("loop.initialDelay"),
         LoopDelay("loop.delay"),
         LoopCount("loop.count"),
@@ -92,36 +98,51 @@ public class Distributer {
         }else{
             log.info("This message is processed by {}", matchedGenerator);
         }
+
     }
+
     private boolean processMsg(Message message, SessionID sessionId, GeneratorWrapper gw){
         boolean matched = ruler.match(message, sessionId, gw.rule);
         log.debug("generator {} is matched ? {}",gw.getName(), matched);
         if(matched){
             if(gw.isLoop()){
                 log.debug("it's a loop generator, add message to scheduler queue");
-                loop.addTask(message,sessionId,gw);
+                Loop.get().addTask(message,sessionId,gw);
             }else{
                 createAndSendMessage(message, sessionId, gw);
+                postAction(message, sessionId, gw);
             }
         }
         return matched;
+    }
+    // only request-response support, stream unsupported.
+    private void postAction(Message message, SessionID sessionId, GeneratorWrapper gw){
+        if(gw.postActionCancel.isEmpty()){
+            return;
+        }
+        try{
+            EvaluationContext context = new StandardEvaluationContext();
+            context.setVariable("message", message);
+            context.setVariable("sessionID", sessionId);
+            String id = new SpelExpressionParser().parseExpression(gw.postActionCancel).getValue(context, String.class);
+            Loop.get().cancelById(id);
+        }catch (Throwable e){
+            log.error("Can't cancel the loop task by spring EL {}",gw.postActionCancel,e);
+        }
     }
     private void createAndSendMessage(Message message, SessionID sessionId, GeneratorWrapper gw){
         Message reply;
         try {
             reply = gw.generator.create(message, sessionId);
-            Session.sendToTarget(reply, sessionId);
-        } catch (quickfix.SessionNotFound ex) {
-            log.error("Handler error, can't  find quickfix.SessionNotFound, generator = {}, sessionId = {}"
+            if(reply!=null){
+                Session.sendToTarget(reply, sessionId);
+            }
+        } catch (Throwable ex) {
+            log.error("generator create and send message error generator = {}, sessionId = {}"
                     , gw.name, sessionId);
             throw new RuntimeException(ex);
         }
     }
-
-/*    private void sendMsg(SessionID sessionId, Message replay) throws FieldNotFound, SessionNotFound {
-        //replay.reverseRoute(msg.getHeader());
-        Session.sendToTarget(replay, sessionId);
-    }*/
 
     public void destory(){
         allGen.values().forEach(e->{e.generator.destroy();});
@@ -136,12 +157,11 @@ public class Distributer {
         initRuler(properties);
         initGenerator(properties);
         initLoop(properties);
-
     }
 
     private void initLoop(Properties properties){
         int poolSize = Integer.valueOf(properties.getProperty("loop.poolSize","5"));
-        loop = new Loop(poolSize);
+        Loop.setPoolSize(poolSize);
     }
 
     private void initRuler(Properties properties){
@@ -186,6 +206,8 @@ public class Distributer {
             wrapper.type = type;
             wrapper.name = name;
             wrapper.rule=properties.getProperty(DistributerParam.Rule.getKeyName());
+            // only one post action, if more, it will be modified.
+            wrapper.postActionCancel=properties.getProperty(DistributerParam.CancelPostAction.getKeyName(),"");
 
             // if <=0, then don't loop
             wrapper.loopDelay = getLongFromPropertiesDefaultZero(DistributerParam.LoopDelay,properties);
@@ -197,9 +219,10 @@ public class Distributer {
             }
             wrapper.loopIdExpression = properties.getProperty(DistributerParam.LoopIdExpression.getKeyName());
             if(wrapper.isLoop() && wrapper.loopCount <= 0 && wrapper.isNoIdExpression()){
-                log.warn("{} is infinite loop, but no loopIdExpression, it will not be stopped", wrapper.name);
+                log.info("{} is infinite loop, but no loopIdExpression, it will not be stopped", wrapper.name);
             }
-            String unitType= properties.getProperty(DistributerParam.LoopTimeUnit.getKeyName());
+            String unitType= properties.getProperty(DistributerParam.LoopTimeUnit.getKeyName()
+                    ,ChronoUnit.MILLIS.toString());
             wrapper.loopTimeUnit = getTimeUnit(unitType);
 
 
@@ -208,7 +231,7 @@ public class Distributer {
             gen.init(properties);
 
             allGen.put(wrapper.name,wrapper);
-            log.info("Success to create a generator {}",wrapper.name);
+            log.info("Success to create a generator {}",wrapper);
 
         });
     }
@@ -291,6 +314,7 @@ public class Distributer {
         private long loopCount;
         private TimeUnit loopTimeUnit;
         private String loopIdExpression;
+        private String postActionCancel;
         private Generator generator;
 
         public boolean isLoop(){
@@ -299,6 +323,10 @@ public class Distributer {
 
         public boolean isNoIdExpression(){
             return StringUtils.isEmpty(loopIdExpression);
+        }
+
+        public String toString(){
+           return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
         }
 
     }

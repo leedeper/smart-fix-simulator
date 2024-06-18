@@ -33,7 +33,12 @@ public final class Info {
 
    public enum Side {
        In,Out;
+   }
+
+    public enum EventLogType {
+        Error,Info;
     }
+
 
     /**
      * if success

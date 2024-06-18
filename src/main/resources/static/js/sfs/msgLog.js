@@ -5,7 +5,7 @@ $(function() {
         var layer = layui.layer;
         tableIns=table.render({
             elem: '#msgLogList',
-            url:'/msglog/msg',
+            url:'/sfs/msg',
             method: 'post',
             cellMinWidth: 80,
             page: true,
@@ -22,15 +22,15 @@ $(function() {
             cols: [[
                 {type:'numbers'}
                 ,{field:'side', title:'Side',align:'center', width:60, templet: function(d){
-                                                                              if(d.side === 'In'){
+                                                                              if(d.side == 'In'){
                                                                                 return '<span class="layui-bg-green" style="width: 25px;color:white; width:20px;display:block;border-radius:.25em">In</span>';
                                                                               } else {
                                                                                 return '<span style="background-color: #ffb800; width:25px;color:white; width:20px;display:block;border-radius:.25em">Out</span>';
                                                                               }
                                                                             }}
                 ,{field:'time', title:'Time',align:'center',width:200}
-                ,{field:'beginString', title:'Version',align:'center'}
-                ,{field:'msgType', title:'Type',align:'center',templet: function(d){
+                ,{field:'beginString', title:'Version',align:'center',width:60}
+                ,{field:'msgType', title:'Type',align:'center', width:60, templet: function(d){
                                                                                     // random but certainty color for msgType
                                                                                    var mType = d.msgType;
                                                                                    var inx=0;
@@ -45,13 +45,13 @@ $(function() {
                                                                                          temp='0'+temp;
                                                                                    }
                                                                                    var clor='#'+temp;
-                                                                                   return  '<span id="msgTypeId'+d.id+'" ondblclick="showTypeName(\''+mType+'\',\''+d.id+'\')" style="background-color:'+clor+';color:white; width:20px;display:block;border-radius:.25em">'+mType+'</span>';
+                                                                                   return  '<span id="msgTypeId'+d.id+'" ondblclick="showTypeName(\''+mType+'\',\''+d.id+'\')" style="background-color:'+clor+';color:white; width:10px;display:block;border-radius:.25em">'+mType+'</span>';
                                                                                     }}
                 ,{field:'msgSeqNum', title:'Sequence',align:'center'}
                 ,{field:'senderCompID', title: 'Sender',align:'center'}
                 ,{field:'targetCompID', title: 'Target',align:'center'}
                 ,{field:'text', title: 'Message',align:'center'}
-                ,{title:'Operation',align:'center', toolbar:'#optBar'}
+                ,{title:'Operation',align:'center', width:200, toolbar:'#optBar'}
             ]]
         });
 
@@ -90,7 +90,7 @@ $(function() {
             //console.info(field);
             // reload the table
             table.reload('msgLogList', {
-                url: "/msglog/msg",
+                url: "/sfs/msg",
                 page: {
                     curr: 1
                 },
@@ -109,12 +109,12 @@ bindDataToSelect("#msgType","/home/util/msgType");
 
 function bindDataToSelect(selectId, url, defaultValue){
     $.post(url, function (data){
-        $(selectId).empty();
-        $(selectId).append("<option value=''>Select</option>");
-        var kv = data.content;
-        $.each(kv, function(key,value){
-            $(selectId).append("<option value='"+value+"'>"+key+"</option>");
-        }
+            $(selectId).empty();
+            $(selectId).append("<option value=''>Select</option>");
+            var kv = data.content;
+            $.each(kv, function(key,value){
+                $(selectId).append("<option value='"+value+"'>"+key+"</option>");
+            }
         );
         layui.use(['form'], function(){
             if(defaultValue != undefined && defaultValue!=null && defaultValue!=''){
@@ -144,7 +144,7 @@ function showFixMsg(msgId){
       shade: 0.8,
       closeBtn: 1,
       shadeClose: true,
-      content: '/msglog/detail?msgId='+msgId
+      content: '/sfs/detail?msgId='+msgId
     });
 }
 
@@ -168,7 +168,7 @@ function delAll(){
                 title: "Confirmation Dialog",
                 btn: ['Yes','No']
             }, function(){
-                $.post("/msglog/delAllMsg",function(data){
+                $.post("/sfs/delallmsg",function(data){
                     if (data.code == 1) {
                         layer.alert("Delete successfully",function(){
                             layer.closeAll();
@@ -188,7 +188,7 @@ function delOne(obj) {
                 title: "Confirmation Dialog",
                 btn: ['Yes','No']
             }, function(){
-                $.post("/msglog/delMsg",{"id":obj.id},function(data){
+                $.post("/sfs/delmsg",{"id":obj.id},function(data){
                     if (data.code == 1) {
                         layer.alert("Delete successfully",function(){
                             layer.closeAll();

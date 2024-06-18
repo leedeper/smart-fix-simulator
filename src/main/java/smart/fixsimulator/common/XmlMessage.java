@@ -170,7 +170,7 @@ public class XmlMessage {
     private String getText(String originalText){
         if(analyzer!=null && originalText.startsWith(BEGIN)){
             String exp = getExpression(originalText);
-            return analyzer.analyzer(exp);
+            return analyzer.analyzer(exp.trim());
         }else{
             return originalText;
         }

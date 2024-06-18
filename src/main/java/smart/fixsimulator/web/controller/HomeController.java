@@ -57,6 +57,19 @@ public class HomeController {
         return "home";
     }
 
+    @PostMapping("/home/util/sessions")
+    @ResponseBody
+    public ResponseResult<?> getAllSession(){
+        ArrayList<String> data=new ArrayList();
+        FixMessageUtil.getAllSession().keySet().forEach(s->{
+            data.add(s.toString());
+        });
+
+        ResponseResult<List<String>> r= new ResponseResult<>();
+        r.setContent(data);
+        return r;
+    }
+
     @PostMapping("/home/util/fixMsgTypeName")
     @ResponseBody
     public ResponseResult<?> getMessageLog(@RequestParam("msgType") String type){

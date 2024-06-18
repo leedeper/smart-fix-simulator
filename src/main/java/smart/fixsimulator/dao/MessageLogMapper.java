@@ -26,6 +26,7 @@ import io.mybatis.mapper.example.ExampleMapper;
 import org.springframework.util.StringUtils;
 import smart.fixsimulator.dataobject.MessageLogDO;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -37,7 +38,7 @@ import java.util.List;
 public interface MessageLogMapper extends Mapper<MessageLogDO,Long> {
 
 
-    default List<MessageLogDO> getAllMessageLogDesc(MessageLogDO contition){
+    default List<MessageLogDO> getAllMessageLogDesc(MessageLogDO contition, Date startDate, Date endDate){
         Example<MessageLogDO> example =new Example<>();
         Example.Criteria<MessageLogDO> criteria = example.createCriteria();
 
@@ -59,6 +60,13 @@ public interface MessageLogMapper extends Mapper<MessageLogDO,Long> {
 
         if(!StringUtils.isEmpty(contition.getTargetCompID())) {
             criteria.andEqualTo(MessageLogDO::getTargetCompID, contition.getTargetCompID());
+        }
+
+        if(!StringUtils.isEmpty(startDate)) {
+            criteria.andGreaterThanOrEqualTo(MessageLogDO::getTime, startDate);
+        }
+        if(!StringUtils.isEmpty(endDate)) {
+            criteria.andLessThanOrEqualTo(MessageLogDO::getTime, endDate);
         }
 
         example.orderBy(MessageLogDO::getTime, Example.Order.DESC);

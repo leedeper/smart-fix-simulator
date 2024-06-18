@@ -22,27 +22,33 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="https://github.com/leedeper/smart-fix-simulator" target="_blank">
-                    <img src="/images/github.png" class="layui-nav-img"></img>
-                    github help
+                    <img src="/images/github.png" class="layui-nav-img"/>
+                    Github Repository
                 </a>
             </li>
         </ul>
     </div>
 
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:;">System Function</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/msglog/allmsglog">Fix Message</a></dd>
-                        <dd><a href="/event/allevent">Fix Event</a></dd>
-                        <dd><a href="/session/allsession">Fix Session</a></dd>
-                    </dl>
-                </li>
-            </ul>
+
+        <div class="layui-side layui-bg-black" >
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree">
+                    <li class="layui-nav-item layui-nav-itemed" flag="1">
+                        <a href="javascript:;">System Function
+                            <span class="layui-nav-more"></span>
+                        </a>
+                        <dl class="layui-nav-child" id="lefMenu">
+                            <dd><a href="/sfs/allmsglog">Fix Message Log</a></dd>
+                            <dd><a href="/sfs/alleventlog">Fix Event Log</a></dd>
+                            <dd><a href="/sfs/allsession">Fix Session Monitor</a></dd>
+                            <dd><a href="/sfs/looptask">Loop Task Monitor</a></dd>
+                            <dd><a href="/sfs/tranfix2xml">Parse Fix Message</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
+
     </div>
 <script type="text/javascript" src="/js/head.js"></script>
 </header>

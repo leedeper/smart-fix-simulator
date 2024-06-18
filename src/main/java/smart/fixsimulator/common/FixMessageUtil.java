@@ -76,10 +76,20 @@ public class FixMessageUtil {
     public static Message parseXML(String xmlStr, SessionID sessionId, XmlMessage.Analyzer analyzer){
         try {
             String rawMsg = new XmlMessage(xmlStr, String.valueOf(Info.SPLIT_CHAT), analyzer).toFixMessage();
+            rawMsg = changeSum(rawMsg);
             return toMessage(rawMsg, sessionId);
         }catch (Throwable e){
             throw  new RuntimeException(e);
         }
+    }
+
+    private static String changeSum(String rawMsg){
+        int sum = MessageUtils.checksum(rawMsg);
+        String splitedMsg[]=rawMsg.split("\u000110=");
+        int inx = splitedMsg[1].indexOf('\u0001');
+        String tail = splitedMsg[1].substring(inx);
+        String newMsg = splitedMsg[0]+"\u000110="+sum+tail;
+        return newMsg;
     }
 
     public static Message parseXML(String xmlStr,SessionID sessionId){
@@ -89,6 +99,9 @@ public class FixMessageUtil {
     public static String toXML(String beginString, String senderCompID
             , String targetCompID, String qualifier, String rawMsg) {
         SessionID sId=new SessionID(beginString, senderCompID, targetCompID, qualifier);
+        return toXML(rawMsg,sId);
+    }
+    public static String toXML( String rawMsg,SessionID sId) {
         Message msg = toMessage(rawMsg,sId);
         return msg.toXML();
     }

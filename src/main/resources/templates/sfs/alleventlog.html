@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: htmlhead" th:with="title='Smart Fix Simulator'"></head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- header -->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body" style="margin: 1%">
+
+        <div class="layui-row">
+            <div id="eventFunction" class="layui-form layui-form-pane"  style="margin-bottom: 10px;">
+                <div style="float: left;">
+                    <a class="layui-btn layui-btn-xs" onclick="delAllEvent()" style="background-color: yellow; color:red ">Clear All Event</a>
+                </div>
+
+                <div style="float: right;">
+                    <button class="layui-input-block layui-btn" onclick="javascript:location.reload();">Refresh</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+             <table id="eventLogList" lay-filter="eventLogTable" lay-even lay-skin="line"></table>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/sfs/eventLog.js"></script>
+
+</div>
+</body>
+</html>

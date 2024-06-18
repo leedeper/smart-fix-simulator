@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import smart.fixsimulator.common.Info;
 import smart.fixsimulator.dataobject.MessageLogDO;
@@ -33,6 +34,9 @@ import smart.fixsimulator.web.response.PageResponseResult;
 import smart.fixsimulator.web.response.ResponseResult;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,7 +45,7 @@ import java.util.List;
  * @author Leedeper
  */
 @Slf4j
-@RequestMapping("/msglog")
+@RequestMapping("/sfs")
 @Controller
 public class MessageLogController {
 
@@ -51,7 +55,7 @@ public class MessageLogController {
     @RequestMapping({"/","/allmsglog"})
     public String allMessage(){
         log.debug("access all message_log page");
-        return "/msglog/allmsglog";
+        return "sfs/allmsglog";
     }
 
 
@@ -60,15 +64,30 @@ public class MessageLogController {
     public PageResponseResult<?> getMessageLog(@RequestParam("pageNum") Integer pageNum
                                                 ,@RequestParam("pageSize") Integer pageSize
                                                 ,SearchRequest searchRequest){
+        log.debug("receive search request : pageNum ={},pageSize={}, parameter = {}",pageNum, pageSize, searchRequest);
+
         MessageLogDO condition = new MessageLogDO();
         condition.setSide(searchRequest.getSide());
         condition.setMsgType(searchRequest.getMsgType());
         condition.setSenderCompID(searchRequest.getSender());
         condition.setTargetCompID(searchRequest.getTarget());
         condition.setBeginString(searchRequest.getVersion());
-        log.debug("receive search request : pageNum ={},pageSize={}, parameter = {}",pageNum, pageSize, searchRequest);
-
-        return messageLogService.getMessageLog(pageNum, pageSize, condition);
+        Date startDate = null, endDate=null;
+        if(!StringUtils.isEmpty(searchRequest.getStartDate())){
+            startDate = toDate(searchRequest.getStartDate());
+        }
+        if(!StringUtils.isEmpty(searchRequest.getEndDate())){
+            endDate = toDate(searchRequest.getEndDate());
+        }
+        return messageLogService.getMessageLog(pageNum, pageSize, condition, startDate, endDate);
+    }
+    private Date toDate(String date){
+        try {
+            return new SimpleDateFormat("yyyyMMdd HH:mm:ss").parse(date + " 00:00:00");
+        } catch (ParseException e) {
+            log.error("date format is invalid");
+            return null;
+        }
     }
 
     @RequestMapping("detail")
@@ -76,10 +95,10 @@ public class MessageLogController {
         ResponseResult<?> res = messageLogService.getMessageLogDetail(msgId);
         model.addAttribute("xml", res.getContent());
 
-        return "/msglog/detail";
+        return "sfs/msglogdetail";
     }
 
-    @RequestMapping("/delMsg")
+    @RequestMapping("/delmsg")
     @ResponseBody
     public ResponseResult<?> delMsg(@RequestParam("id") String id){
         boolean succ=messageLogService.del(id);
@@ -89,7 +108,7 @@ public class MessageLogController {
         return Info.SUCC_RESULT;
     }
 
-    @RequestMapping("/delAllMsg")
+    @RequestMapping("/delallmsg")
     @ResponseBody
     public ResponseResult<?> delAllMsg(){
         boolean succ=messageLogService.del(null);

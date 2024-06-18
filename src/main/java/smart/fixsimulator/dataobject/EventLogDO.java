@@ -17,21 +17,34 @@
  *
  */
 
-package smart.fixsimulator.fixacceptor.core.buildin;
+package smart.fixsimulator.dataobject;
 
-import java.util.HashMap;
+import io.mybatis.provider.Entity.Column;
+import io.mybatis.provider.Entity.Table;
+import lombok.Data;
+
+import java.sql.Timestamp;
 
 /**
- * all build-in generator, if not in this mapping ,it will be created by class path
+ * Desc:
  *
  * @author Leedeper
  */
-public class BuiltinGeneratorMapping {
-    public static HashMap<String,Class<?>> mapping =new HashMap<>();
-    static{
-        mapping.put("xsltgen", XSLTGenerator.class);
-        mapping.put("xmlgen", XMLGenerator.class);
-        mapping.put("nonegen", NoneGenerator.class);
-    }
+@Data
+@Table("event_log")
+public class EventLogDO {
+    @Column(value="id",id=true)
+    private Long id;
 
+    @Column("time")
+    private Timestamp time;
+
+    @Column("sessionid")
+    private String sessionID;
+
+    @Column
+    private String type;
+
+    @Column("text")
+    private String text;
 }

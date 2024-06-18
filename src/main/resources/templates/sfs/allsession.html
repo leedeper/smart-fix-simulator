@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head th:include="layout :: htmlhead" th:with="title='Smart Fix Simulator'"></head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- header -->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body" style="margin: 1%">
+        <div class="layui-row">
+            <div id="topFunction" class="layui-form layui-form-pane"  style="margin-bottom: 10px;">
+                <div style="float: right;">
+                    <button class="layui-input-block layui-btn" onclick="javascript:location.reload();">Refresh</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <table id="sessionList" lay-filter="sessionTable" lay-even lay-skin="line"></table>
+        </div>
+        <script type="text/html" id="optBar">
+            {{#  if(d.logon != true){ }}
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="fixLogon">Logon</a>
+            {{#  } else { }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="fixLogout">Logout</a>
+            {{#  } }}
+        </script>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/sfs/fixSession.js"></script>
+
+</div>
+</body>
+</html>

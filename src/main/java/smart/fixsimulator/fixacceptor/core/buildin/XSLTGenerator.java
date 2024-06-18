@@ -21,64 +21,62 @@ package smart.fixsimulator.fixacceptor.core.buildin;
 
 import lombok.extern.slf4j.Slf4j;
 import quickfix.*;
-import quickfix.field.*;
+import smart.fixsimulator.common.FixMessageUtil;
 import smart.fixsimulator.fixacceptor.core.Generator;
 
-import java.util.List;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 import java.util.Properties;
 
 /**
- * Desc:
+ * Desc:generator message from xml which is translated by xslt
  *
  * @author Leedeper
  */
 @Slf4j
 public class XSLTGenerator implements Generator {
+    private Transformer transformer;
     @Override
     public Message create(Message message, SessionID sessionId) {
+            return createMessage(message, sessionId);
+    }
+
+    private Message createMessage(Message message, SessionID sessionId) {
+        if(transformer==null){
+            throw new RuntimeException("No xslt transformer init, do nothing.");
+        }
+        Source xml = new StreamSource(new StringReader(message.toXML()));
+        ByteArrayOutputStream os=new ByteArrayOutputStream();
+        Result result = new StreamResult(os);
         try {
-            return mockExecutionReport(message);
-        } catch (FieldNotFound e) {
+            transformer.transform(xml, result);
+        } catch (TransformerException e) {
+            log.error("Can't transform xml by xslt ");
             throw new RuntimeException(e);
-        } catch (SessionNotFound e) {
-            throw new RuntimeException(e);
+        }
+        String xmlStr = os.toString();
+        return FixMessageUtil.parseXML(xmlStr, sessionId);
+    }
+    @Override
+    public void init(Properties properties) {
+        log.info("xsltgen init : {}", properties);
+        // maybe auto reload when modified in the future.
+        try {
+            String xsltPath = properties.getProperty("xsltPath");
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Source xslt = new StreamSource(xsltPath);
+            transformer = factory.newTransformer(xslt);
+        }catch (Throwable e){
+            log.error("Load xslt error ",e);
         }
     }
 
     @Override
-    public void init(Properties properties) {
-        log.info("xsltgen init : {}", properties);
-    }
-
-    @Override
     public void destroy() {
-
+        log.info("xsltgen destroy ");
     }
 
-    private Message createMessage(Message message, String msgType) throws FieldNotFound {
-        Message msg= new DefaultMessageFactory().create(message.getHeader().getString(BeginString.FIELD), msgType);
-        msg.reverseRoute(message.getHeader());
-        return msg;
-    }
-    private Message mockExecutionReport(Message message)
-            throws FieldNotFound, SessionNotFound {
-        Message reply = createMessage(message, MsgType.EXECUTION_REPORT);
-        String refSeqNum = message.getHeader().getString(MsgSeqNum.FIELD);
-        reply.setInt(AvgPx.FIELD, 22);
-        reply.setString(ClOrdID.FIELD, "id1111352157882577");
-        reply.setDouble(LastPx.FIELD,0D);
-        reply.setDouble(LastQty.FIELD,0D);
-        reply.setDouble(CumQty.FIELD, 2233);
-        reply.setString(ExecID.FIELD, "948485id");
-        reply.setChar(ExecTransType.FIELD, '3');
-        reply.setString(OrderID.FIELD, "orderid0001");
-        reply.setDouble(OrderQty.FIELD, message.getDouble(OrderQty.FIELD));
-        reply.setChar(OrdStatus.FIELD, '0');
-        reply.setChar(Side.FIELD, message.getChar(Side.FIELD));
-        reply.setString(Symbol.FIELD, message.getString(Symbol.FIELD));
-        reply.setChar(ExecType.FIELD,'2');
-        reply.setDouble(LeavesQty.FIELD, 0d);
-        log.info("mock ExecutionReport msg : Message={}", reply);
-        return reply;
-    }
 }

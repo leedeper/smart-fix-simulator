@@ -17,21 +17,21 @@
  *
  */
 
-package smart.fixsimulator.fixacceptor.core.buildin;
+package smart.fixsimulator.service;
 
-import java.util.HashMap;
+import smart.fixsimulator.dataobject.MessageLogDO;
+import smart.fixsimulator.web.response.PageResponseResult;
+import smart.fixsimulator.web.response.ResponseResult;
+
+import java.util.List;
 
 /**
- * all build-in generator, if not in this mapping ,it will be created by class path
+ * the event log service
  *
  * @author Leedeper
  */
-public class BuiltinGeneratorMapping {
-    public static HashMap<String,Class<?>> mapping =new HashMap<>();
-    static{
-        mapping.put("xsltgen", XSLTGenerator.class);
-        mapping.put("xmlgen", XMLGenerator.class);
-        mapping.put("nonegen", NoneGenerator.class);
-    }
+public interface EventLogService<T> {
+    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize);
 
+    boolean deleteAll();
 }

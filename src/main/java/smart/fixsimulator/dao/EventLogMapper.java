@@ -17,21 +17,27 @@
  *
  */
 
-package smart.fixsimulator.fixacceptor.core.buildin;
+package smart.fixsimulator.dao;
 
-import java.util.HashMap;
+import io.mybatis.mapper.Mapper;
+import io.mybatis.mapper.example.Example;
+import smart.fixsimulator.dataobject.EventLogDO;
+
+import java.util.List;
+
 
 /**
- * all build-in generator, if not in this mapping ,it will be created by class path
+ * event log DAO
  *
  * @author Leedeper
  */
-public class BuiltinGeneratorMapping {
-    public static HashMap<String,Class<?>> mapping =new HashMap<>();
-    static{
-        mapping.put("xsltgen", XSLTGenerator.class);
-        mapping.put("xmlgen", XMLGenerator.class);
-        mapping.put("nonegen", NoneGenerator.class);
+public interface EventLogMapper extends Mapper<EventLogDO,Long> {
+
+
+    default List<EventLogDO> getAllEventLogDesc(){
+        Example<EventLogDO> example =new Example<>();
+        example.orderBy(EventLogDO::getTime, Example.Order.DESC);
+        return this.selectByExample(example);
     }
 
 }

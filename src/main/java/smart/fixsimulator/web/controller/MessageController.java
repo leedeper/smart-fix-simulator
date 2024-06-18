@@ -26,12 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import smart.fixsimulator.dto.MessageDTO;
 import smart.fixsimulator.service.MessageService;
 import smart.fixsimulator.web.response.PageResponseResult;
-import smart.fixsimulator.web.response.ResponseResult;
 
 import java.util.List;
 
 /**
- * define the message controller
+ * define the message controller, wait to used
  *
  * @author Leedeper
  */
@@ -46,7 +45,7 @@ public class MessageController {
     @RequestMapping({"/","/allMessage"})
     public String allMessage(){
         log.debug("access all message page");
-        return "/message/allMessage";
+        return "sfs/allMessage";
     }
 
 
@@ -58,11 +57,4 @@ public class MessageController {
         return messageService.getMessage(pageNum, pageSize);
     }
 
-    @GetMapping("/msg2")
-    @ResponseBody
-    public ResponseResult<String> getMessage(){
-        ResponseResult<String> r=new ResponseResult<>();
-        r.setContent("hello");
-        return null;
-    }
 }

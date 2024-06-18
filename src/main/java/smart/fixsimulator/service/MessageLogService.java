@@ -23,6 +23,7 @@ import smart.fixsimulator.dataobject.MessageLogDO;
 import smart.fixsimulator.web.response.PageResponseResult;
 import smart.fixsimulator.web.response.ResponseResult;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,7 +32,8 @@ import java.util.List;
  * @author Leedeper
  */
 public interface MessageLogService<T> {
-    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize, MessageLogDO condition);
+    PageResponseResult<T> getMessageLog(Integer pageNum, Integer pageSize
+            , MessageLogDO condition, Date startDate, Date endDate);
 
     ResponseResult<String> getMessageLogDetail(String id);
 
