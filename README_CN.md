@@ -48,6 +48,7 @@ OpenJDK 64-Bit Server VM (build 25.412-b00, mixed mode)
 cd xxx/smart-fix-simulator-x.x.x/
 java -jar smart-fix-simulator-x.x.x.jar
 ```
+然后就可以通过浏览器访问http://localhost:9090/
 
 ## 二. 配置说明
 * 默认web端口为9090，如果和本系统已经存在的服务冲突或希望指定其它端口，则可以增加启动参数，例如修改为8085

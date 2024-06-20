@@ -52,6 +52,7 @@ OpenJDK 64-Bit Server VM (build 25.412-b00, mixed mode)
 cd xxx/smart-fix-simulator-x.x.x/
 java -jar smart-fix-simulator-x.x.x.jar
 ```
+Access the websit : http://localhost:9090/
 ## 2. Configuration Description
 * The default web server port is 9090. If you want to specify another port, you can add startup parameters, such as modifying to 8085
 ```
