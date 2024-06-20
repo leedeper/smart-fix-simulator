@@ -35,20 +35,24 @@ import java.util.Properties;
  */
 @Slf4j
 public class MyDemoGenerator implements Generator {
+    private boolean mockReport;
     @Override
     public Message create(Message message, SessionID sessionId) {
-        try {
-            return mockExecutionReport(message);
-        } catch (FieldNotFound e) {
-            throw new RuntimeException(e);
-        } catch (SessionNotFound e) {
-            throw new RuntimeException(e);
+        if(mockReport) {
+            try {
+                return mockExecutionReport(message);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
+        return null;
     }
 
     @Override
     public void init(Properties properties) {
         log.info("demogen init : {}", properties);
+        // the parameter is set by generator.xxx.mockReport
+        mockReport = Boolean.valueOf(properties.getProperty("mockReport","true"));
     }
 
     @Override

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<message>
+    <header>
+        <field tag="8"><![CDATA[FIX.4.0]]></field>
+        <field tag="9"><![CDATA[168]]></field>
+        <field tag="34"><![CDATA[16]]></field>
+        <field tag="35"><![CDATA[S]]></field>
+        <field tag="49"><![CDATA[EXEC]]></field>
+        <field tag="52"><![CDATA[20240612-08:28:34.995]]></field>
+        <field tag="56"><![CDATA[BANZAI]]></field>
+    </header>
+    <body>
+        <field tag="55"><![CDATA[${sp:#message.getString(55)}]]></field>
+        <field tag="62"><![CDATA[${UTCDateTime()}]]></field>
+        <field tag="117"><![CDATA[${Sequence(./USDJPYQuoteId.seq)}]]></field>
+        <field tag="131"><![CDATA[${sp:#message.getString(131)}]]></field>
+        <field tag="132"><![CDATA[${RandomFloat(150.11,160.11)}]]></field>
+        <field tag="133"><![CDATA[${RandomFloat(150.11,160.11)}]]></field>
+        <field tag="134"><![CDATA[${RandomInt(1000000,2000000)}]]></field>
+        <field tag="135"><![CDATA[${RandomInt(1000000,2000000)}]]></field>
+    </body>
+    <trailer>
+        <field tag="10"><![CDATA[233]]></field>
+    </trailer>
+</message>

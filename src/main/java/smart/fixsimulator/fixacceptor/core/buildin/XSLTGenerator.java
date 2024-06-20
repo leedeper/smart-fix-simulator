@@ -22,6 +22,7 @@ package smart.fixsimulator.fixacceptor.core.buildin;
 import lombok.extern.slf4j.Slf4j;
 import quickfix.*;
 import smart.fixsimulator.common.FixMessageUtil;
+import smart.fixsimulator.common.ScannedFileLoader;
 import smart.fixsimulator.fixacceptor.core.Generator;
 
 import javax.xml.transform.*;
@@ -38,6 +39,8 @@ import java.util.Properties;
  */
 @Slf4j
 public class XSLTGenerator implements Generator {
+    // needn't restart after modify the xslt file
+    private ScannedFileLoader scannedFileLoader;
     private Transformer transformer;
     @Override
     public Message create(Message message, SessionID sessionId) {
@@ -63,11 +66,16 @@ public class XSLTGenerator implements Generator {
     @Override
     public void init(Properties properties) {
         log.info("xsltgen init : {}", properties);
-        // maybe auto reload when modified in the future.
+        String xsltPath = properties.getProperty("xsltPath");
+        scannedFileLoader=new ScannedFileLoader(xsltPath, newStr -> {
+            instanceTransformer(newStr);
+        });
+        instanceTransformer(scannedFileLoader.get());
+    }
+    private void instanceTransformer(String str){
         try {
-            String xsltPath = properties.getProperty("xsltPath");
             TransformerFactory factory = TransformerFactory.newInstance();
-            Source xslt = new StreamSource(xsltPath);
+            Source xslt = new StreamSource(new StringReader(str));
             transformer = factory.newTransformer(xslt);
         }catch (Throwable e){
             log.error("Load xslt error ",e);

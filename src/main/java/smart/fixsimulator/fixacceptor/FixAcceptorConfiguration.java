@@ -48,6 +48,9 @@ public class FixAcceptorConfiguration {
     @Value("${simulator.cfg.path:./simulator.cfg}")
     private String simulatorCfgPath;
 
+    @Value("${quickfix.messageStoreFactory.type:file}")
+    private String messageStoreFactoryType;
+
     @Bean
     public Application serverApplication() {
         return new FixApplicationAdapter(simulatorCfgPath);
@@ -64,9 +67,14 @@ public class FixAcceptorConfiguration {
 
     @Bean
     public MessageStoreFactory serverMessageStoreFactory(SessionSettings serverSessionSettings, DataSource dataSource) {
-        JdbcStoreFactory jdbcStoreFactory = new JdbcStoreFactory(serverSessionSettings);
-        jdbcStoreFactory.setDataSource(dataSource);
-        return jdbcStoreFactory;
+        MessageStoreFactory messageStoreFactory;
+        if(messageStoreFactoryType.equals("db")){
+            JdbcStoreFactory jdbcStoreFactory = new JdbcStoreFactory(serverSessionSettings);
+            jdbcStoreFactory.setDataSource(dataSource);
+            return jdbcStoreFactory;
+        }else{
+           return new FileStoreFactory(serverSessionSettings);
+        }
     }
 
     @Bean

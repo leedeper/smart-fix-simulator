@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -53,7 +54,32 @@ public class InnerCommand {
         mapping.put("UTCDateTime", new UTCDateTime());
     }
 
-    public static String getValue(String name, String [] parameters){
+    public static String getValue(String originalText){
+        // Prevent someone from calling in the wrong time.
+        if(originalText.startsWith("sp:")){
+            log.error("The timing of the call is incorrect, don't support sp: command ");
+            return null;
+        }
+        String nameAndParameter[] = originalText.split("\\(");
+        if(nameAndParameter.length != 2){
+            throw new RuntimeException("Invalid command. no ( or more - "+originalText);
+        }
+        String name = nameAndParameter[0];
+        String theTail = nameAndParameter[1];
+        if(theTail.charAt(theTail.length()-1)!=')'){
+            throw new RuntimeException("Invalid command. no ) as end - "+originalText);
+        }
+        theTail = theTail.substring(0,theTail.length()-1);
+
+        String allParameter[] = theTail.split(",");
+        String ps[]= new String[allParameter.length];
+        for(int i=0;i<allParameter.length;i++){
+            ps[i]=allParameter[i].trim();
+        }
+        return getValue(name,allParameter);
+    }
+
+    private static String getValue(String name, String [] parameters){
         Command cmd = mapping.get(name);
         if(cmd!=null){
             return cmd.process(parameters);
@@ -69,7 +95,7 @@ public class InnerCommand {
     private static class UTCTime implements Command{
         @Override
         public String process(String[] parameters) {
-            return LocalDate.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            return LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("HH:mm:ss"));
         }
     }
     // format 20240618-02:23:06
@@ -77,7 +103,7 @@ public class InnerCommand {
 
         @Override
         public String process(String[] parameters) {
-            return LocalDate.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss"));
+            return LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss"));
         }
     }
 

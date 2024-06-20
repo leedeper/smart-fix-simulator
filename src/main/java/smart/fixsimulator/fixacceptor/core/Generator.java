@@ -22,7 +22,6 @@ package smart.fixsimulator.fixacceptor.core;
 import quickfix.Message;
 import quickfix.SessionID;
 
-import java.util.List;
 import java.util.Properties;
 
 /**

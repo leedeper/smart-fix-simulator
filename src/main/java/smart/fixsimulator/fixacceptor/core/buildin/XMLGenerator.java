@@ -25,17 +25,12 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import quickfix.Message;
 import quickfix.SessionID;
+import smart.fixsimulator.common.ScannedFileLoader;
 import smart.fixsimulator.common.XmlMessage;
 import smart.fixsimulator.fixacceptor.core.Generator;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 import smart.fixsimulator.common.FixMessageUtil;
 
@@ -49,54 +44,25 @@ public class XMLGenerator implements Generator {
 
     /*
     * it can be optimized.
-    * firstly load xml string as message, then copy message every time when request is coming.
-    * finally replace the expression.
-    * also, it can be Thread-Safe.
-    * In the future, it will be managed by GUI.
+    * 1. load xml string as message, then copy message every time when request is coming.
+    * 2. replace the expression.
+    * 3. it could be Thread-Safe.
+    * 4. it will be managed by GUI.
     */
-    private String xmlStr;
-    private String templatePath;
-    private FileTime lastModifiedTime;
-
-    private long refreshInterval = 5000;
+    private ScannedFileLoader scannedFileLoader;
 
     @Override
     public Message create(Message message, SessionID sessionId) {
-        Message replay = FixMessageUtil.parseXML(xmlStr, sessionId, new Analyzer(message,sessionId));
-        return replay;
+        if(scannedFileLoader==null || scannedFileLoader.get()==null){
+            throw new RuntimeException("Pls call after init, or some error has occured");
+        }
+        return FixMessageUtil.parseXML(scannedFileLoader.get(), sessionId, new Analyzer(message,sessionId));
     }
 
     @Override
     public void init(Properties properties) {
-        templatePath = properties.getProperty("templatePath");
-        loadXML();
-
-        // don't restart after modify the template
-        new Timer(true).schedule(new TimerTask() {
-            @Override
-            public void run() {
-                loadXML();
-            }
-        }, refreshInterval, refreshInterval);
-    }
-
-    private void loadXML(){
-        Path path = Paths.get(templatePath);
-        try {
-            FileTime lastTime = Files.getLastModifiedTime(path);
-            if(lastModifiedTime==null){
-                lastModifiedTime = lastTime;
-            }else{
-                if(lastTime.compareTo(lastModifiedTime)==0){
-                    return;
-                }
-                lastModifiedTime = lastTime;
-            }
-            xmlStr =new String(Files.readAllBytes(path));
-            log.info("Load a xml template {}",xmlStr);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String templatePath = properties.getProperty("templatePath");
+        scannedFileLoader = new ScannedFileLoader(templatePath);
     }
 
     @Override
@@ -120,7 +86,7 @@ public class XMLGenerator implements Generator {
                     return porcessBySpEL(expressionStr);
                 } else {
                     // eg ${RandomInt(5,20)}
-                    return processByInnerCommand(originalText);
+                    return InnerCommand.getValue(originalText);
                 }
             }catch (Throwable e){
                 log.error("Can't analyzer expression {}, so use blank string as it.",originalText,e);
@@ -134,25 +100,7 @@ public class XMLGenerator implements Generator {
             context.setVariable("sessionID", reqSessionId);
             return new SpelExpressionParser().parseExpression(expressionStr).getValue(context, String.class);
         }
-        private String processByInnerCommand(String originalText){
-            String nameAndParameter[] = originalText.split("\\(");
-            if(nameAndParameter.length != 2){
-                throw new RuntimeException("Invalid command. no ( or more - "+originalText);
-            }
-            String name = nameAndParameter[0];
-            String theTail = nameAndParameter[1];
-            if(theTail.charAt(theTail.length()-1)!=')'){
-                throw new RuntimeException("Invalid command. no ) as end - "+originalText);
-            }
-            theTail = theTail.substring(0,theTail.length()-1);
 
-            String allParameter[] = theTail.split(",");
-            String ps[]= new String[allParameter.length];
-            for(int i=0;i<allParameter.length;i++){
-                ps[i]=allParameter[i].trim();
-            }
-            return InnerCommand.getValue(name,allParameter);
-        }
     }
 
 }

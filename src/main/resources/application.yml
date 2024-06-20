@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 9090
 
 
 spring:
@@ -25,6 +25,10 @@ spring:
       settings-allow-others: true
   main:
     allow-bean-definition-overriding: true
+
+quickfix:
+  messageStoreFactory:
+    type: file
 
 quickfixj:
   server:
