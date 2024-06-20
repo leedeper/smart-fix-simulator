@@ -19,7 +19,14 @@ SFS是一个灵活通用的、可按照需要返回fix协议报文的服务端�
 * 可以友好使用，提供一些图形界面
 
 # 问题反馈
+欢迎发邮件到<lyziuu@gmail.com>交流，或者在GitHub上留言。
 
+# 关键依赖
+* Java 8 及 SpringBoot
+* [quickFIX/J](https://github.com/quickfix-j/quickfixj)
+* [quickfixj-spring-boot-starter](https://github.com/esanchezros/quickfixj-spring-boot-starter)
+* [layUI](https://github.com/layui/layui/blob/main/README.en-US.md)
+* [MyBatis Mapper](https://github.com/mybatis-mapper/mapper)
 
 # 使用说明
 ## 一. 安装说明
@@ -38,8 +45,8 @@ OpenJDK 64-Bit Server VM (build 25.412-b00, mixed mode)
 
 #### 3. 命令窗口进入到解压目录，并运行即可
 ```
-cd xxx/smartFixSimulator-x.x.x/
-java -jar smartFixSimulator-x.x.x.jar
+cd xxx/smart-fix-simulator-x.x.x/
+java -jar smart-fix-simulator-x.x.x.jar
 ```
 
 ## 二. 配置说明
@@ -47,8 +54,9 @@ java -jar smartFixSimulator-x.x.x.jar
 ```
 java -jar smartFixSimulator-x.x.x.jar --server.port=8085
 ```
+更多参数可以参考文件application.yml
 * 关于fix engine相关配置，存放在quickfixj-server.cfg中，可以参考QuickfixJ官方说明，结合自己的fix client配置文件情况进行修改
-* SFS主要配置文件simulator.cfg，具体说明可以见文件中注释，后续会进行详细补充说明
+* 关于模拟器自身的参数主要在simulator.cfg中，说明如下
 
 | 字段                              | 说明                                                                                                                                                                                                                                                                                                                                       |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -65,11 +73,17 @@ java -jar smartFixSimulator-x.x.x.jar --server.port=8085
 | generator.xxx.loop.idExpression | 定义loop的唯一id，从请求message和sessionID中取值，用spring expression表示                                                                                                                                                                                                                                                                                 |
 | generator.xxx.postAction.cancel | 定义后置行为，目前仅支持cancel指令，配置内容为Spring Expression，返回结果与idExpression逻辑相同，例如订阅报价或挂单场景，可通过此来完成取消                                                                                                                                                                                                                               |
 ## 三. 图形界面说明
-#### 1. 往来消息查看及监控，见下图
-
-#### 2. 
-
-
-
-
-
+#### 1. 往来消息查看及监控
+![message log](https://i.postimg.cc/j53qRgPn/message-Log.png)
+<br>
+双击查看明细
+<br>
+![message detail](https://i.postimg.cc/j5QT5R91/message-Log-Double-Click.png)
+#### 2. Fix引擎事件日志
+![event log](https://i.postimg.cc/4NDdKSMz/eventLog.png)
+#### 3. Fix会话查看
+![session status](https://i.postimg.cc/s2cDND2c/session.png)
+#### 4. 循环任务查看
+![loop task](https://i.postimg.cc/nLZh2Qnr/loopTask.png)
+#### 5. Fix消息转换小工具
+![message to XML kit](https://i.postimg.cc/63p5JJ2N/parse2xml.png)
