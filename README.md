@@ -7,9 +7,6 @@ Smart Fix Simulator
 </div>
 
 # Intro
-SFS is a flexible server-side simulator that can response fix protocol messages as needed. 
-With simple configuration, it can be used for developers, inspectors, and testers to carry out their work.
-
 SFS is a flexible and common server-side behavior simulator that can return fix protocol messages as needed. It can be used through simple configuration, making it convenient for developers, inspectors, and testers to carry out their work. For example, in the following scenarios
 1. I hope to send an order request, and SFS will return a transaction result that includes the specified transaction amount, transaction status, and counterparty information.
 2. I hope to send an order request, and SFS will return transaction information multiple times in chronological order, such as a partial transaction notification first, and then a full transaction notification.
