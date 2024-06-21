@@ -57,10 +57,12 @@ cd xxx/smart-fix-simulator-x.x.x/
 java -jar smart-fix-simulator-x.x.x.jar
 ```
 Access the websit : http://localhost:9090/
+The above can only ensure basic work, and some configurations need to be modified according to your own requirement, mainly including file quickfix j-server.cfg, simulator.cfg, and the files in directory msg-templates.
+
 ## 2. Configuration Description
 * The default web server port is 9090. If you want to specify another port, you can add startup parameters, such as modifying to 8085
 ```
-java -jar smartFixSimulator-x.x.x.jar --server.port=8085
+java -jar smart-fix-simulator-x.x.x.jar --server.port=8085
 ```
 More parameters, you could find out at file application.yml.
 * About the configuration of the fix engine, it is set in quickfixj-server.cfg. You can refer to the official instructions of QuickfixJ and make modifications based on your own fix client configuration file.

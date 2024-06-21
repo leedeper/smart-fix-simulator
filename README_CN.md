@@ -54,10 +54,12 @@ java -jar smart-fix-simulator-x.x.x.jar
 ```
 然后就可以通过浏览器访问http://localhost:9090/
 
+以上只能保障基本的运行，需要根据自己的需要修改相关配置，以适配自己的场景，主要包括quickfixj-server.cfg、simulator.cfg、以及msg-template目录下的模版
+
 ## 二. 配置说明
 * 默认web端口为9090，如果和本系统已经存在的服务冲突或希望指定其它端口，则可以增加启动参数，例如修改为8085
 ```
-java -jar smartFixSimulator-x.x.x.jar --server.port=8085
+java -jar smart-fix-simulator-x.x.x.jar --server.port=8085
 ```
 更多参数可以参考文件application.yml
 * 关于fix engine相关配置，存放在quickfixj-server.cfg中，可以参考QuickfixJ官方说明，结合自己的fix client配置文件情况进行修改
