@@ -14,7 +14,7 @@ SFS是一个灵活通用的、可按照需要返回fix协议报文的服务端�
 4. 希望发送一个报价订阅请求，SFS源源不断的或按照指定的次数的返回报价更新通知。
 5. 希望发送一个报价订阅取消请求，取消源源不断的报价通知。
 6. 同时，系统提供一些列查看和管理工具，帮助更好的分析和模拟。
-   <img src="https://i.postimg.cc/j53qRgPn/message-Log.png" width="288" height="143">
+ <img src="https://i.postimg.cc/j53qRgPn/message-Log.png" width="288" height="143">
 
 # 特性
 * 开源并且可以自由使用
