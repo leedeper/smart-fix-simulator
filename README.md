@@ -5,6 +5,7 @@ Smart Fix Simulator
   <a href="./README.md"><img alt="README in English" src="https://img.shields.io/badge/English-d9d9d9"></a>
   <a href="./README_CN.md"><img alt="README in Simplified Chinese" src="https://img.shields.io/badge/简体中文-d9d9d9"></a>
 </div>
+
 # Intro
 SFS is a flexible server-side simulator that can response fix protocol messages as needed. 
 With simple configuration, it can be used for developers, inspectors, and testers to carry out their work.
