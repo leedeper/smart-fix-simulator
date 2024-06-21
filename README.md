@@ -1,7 +1,10 @@
 Smart Fix Simulator
 ================
 （abbr SFS, pronounced as [sɑːfis]）
-
+<div align="left">
+  <a href="./README.md"><img alt="README in English" src="https://img.shields.io/badge/English-d9d9d9"></a>
+  <a href="./README_CN.md"><img alt="README in Simplified Chinese" src="https://img.shields.io/badge/简体中文-d9d9d9"></a>
+</div>
 # Intro
 SFS is a flexible server-side simulator that can response fix protocol messages as needed. 
 With simple configuration, it can be used for developers, inspectors, and testers to carry out their work.
@@ -45,7 +48,8 @@ openjdk version "1.8.0_412"
 OpenJDK Runtime Environment (build 1.8.0_412-bre_2024_04_17_05_48-b00)
 OpenJDK 64-Bit Server VM (build 25.412-b00, mixed mode)
 ```
-#### 2). Download and decompress [Download](https://github.com/leedeper/smart-fix-simulator/releases)
+#### 2). Download and decompress.
+<a href="https://github.com/leedeper/smart-fix-simulator/releases"><img alt="Download" src="https://img.shields.io/github/release/leedeper/smart-fix-simulator.svg"></a>
 
 #### 3). Access to the directory by the command window and run it.
 ```
