@@ -64,7 +64,7 @@ java -jar smart-fix-simulator-x.x.x.jar
 java -jar smart-fix-simulator-x.x.x.jar --server.port=8085
 ```
 更多参数可以参考文件application.yml
-* 关于fix engine相关配置，存放在quickfixj-server.cfg中，可以参考[QuickfixJ官方说明](see [QuickfixJ Configuration](https://rawgit.com/quickfix-j/quickfixj/master/quickfixj-core/src/main/doc/usermanual/usage/configuration.html))，结合自己的fix client配置文件情况进行修改
+* 关于fix engine相关配置，存放在quickfixj-server.cfg中，可以参考[QuickfixJ官方说明](https://rawgit.com/quickfix-j/quickfixj/master/quickfixj-core/src/main/doc/usermanual/usage/configuration.html)，结合自己的fix client配置文件情况进行修改
 * 关于模拟器自身的参数主要在simulator.cfg中，说明如下
 
 | 字段                              | 说明                                                                                                                                                                                                                                                                                                                                       |
