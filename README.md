@@ -14,7 +14,7 @@ SFS is a flexible and common server-side behavior simulator that can return fix 
 4. I hope to send a quote subscription request, and SFS will continuously or according to the specified number of times return quote update notifications.
 5. I would like to send a quote subscription cancellation request to cancel the continuous stream of quote notifications.
 6. At the same time, the system provides a series of viewing and management tools to help better analyze and simulate.
-![message log](https://i.postimg.cc/j53qRgPn/message-Log.png)
+<img src="https://i.postimg.cc/j53qRgPn/message-Log.png" width="288" height="143">
 
 # Features
 * Open source and freely usable.
