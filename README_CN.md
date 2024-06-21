@@ -5,6 +5,7 @@ Smart Fix Simulator
   <a href="./README.md"><img alt="README in English" src="https://img.shields.io/badge/English-d9d9d9"></a>
   <a href="./README_CN.md"><img alt="README in Simplified Chinese" src="https://img.shields.io/badge/简体中文-d9d9d9"></a>
 </div>
+
 # 简介
 SFS是一个灵活通用的、可按照需要返回fix协议报文的服务端行为模拟器，通过简单配置即可使用，方便开发人员、验收人员、测试人员开展工作。比如以下场景
 1. 希望发送一个下单请求，SFS返回一个成交结果，包含了指定的成交金额、交易状态、交易对手等信息。
