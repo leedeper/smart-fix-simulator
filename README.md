@@ -65,7 +65,7 @@ The above can only ensure basic work, and some configurations need to be modifie
 java -jar smart-fix-simulator-x.x.x.jar --server.port=8085
 ```
 More parameters, you could find out at file application.yml.
-* About the configuration of the fix engine, it is set in quickfixj-server.cfg. You can refer to the official instructions of QuickfixJ and make modifications based on your own fix client configuration file.
+* About the configuration of the fix engine, it is set in quickfixj-server.cfg. You can refer to the official instructions of QuickfixJ and make modifications based on your own fix client configuration file. see [QuickfixJ Configuration](https://rawgit.com/quickfix-j/quickfixj/master/quickfixj-core/src/main/doc/usermanual/usage/configuration.html)
 * The parameters of the simulator itself are mainly in simulator.cfg, as explained below
 
 | Parameter                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
